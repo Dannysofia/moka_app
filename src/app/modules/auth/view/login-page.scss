@@ -1,0 +1,161 @@
+ion-header {
+  --background: #fff;
+  box-shadow: none;
+}
+.login-full {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  box-sizing: border-box;
+  padding: 0 18px;
+  max-width: 100vw;
+  overflow-y: auto;
+}
+.login-full > * {
+  width: 100%;
+  max-width: 420px;
+}
+
+@media (max-width: 480px) {
+  .login-full {
+    padding: 0 8px;
+  }
+  .brand-title {
+    font-size: 1.3rem;
+    margin-bottom: 24px;
+  }
+  .logo-moka img {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 8px;
+  }
+  .welcome {
+    font-size: 1.2rem;
+    margin-bottom: 24px;
+  }
+}
+
+.logo-moka {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.logo-moka img {
+  width: 200px;
+  height: 170px;
+  padding: 8px;
+}
+
+.brand-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #222;
+  letter-spacing: 0.18em;
+  margin-bottom: 32px;
+  text-align: center;
+  font-family: 'Montserrat', 'Arial', sans-serif;
+}
+
+.welcome {
+  margin: 0 0 32px 0;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  font-weight: 700;
+  text-align: center;
+  color: #182518;
+}
+
+.field-label {
+  display: block;
+  margin: 12px 0 4px 4px;
+  font-weight: 500;
+  font-size: 1.08rem;
+  color: #222;
+}
+
+.field {
+  border-radius: 10px;
+  background: #f7f7f7;
+  margin-bottom: 12px;
+  --padding-start: 16px;
+  --inner-padding-end: 0;
+  --background: #f7f7f7;
+  box-shadow: none;
+  min-height: 48px;
+}
+
+
+ion-input {
+  font-size: 1.13rem;
+  color: #222;
+  --padding-start: 0;
+  --background: #f7f7f7;
+}
+
+.primary {
+  margin-top: 24px;
+  border-radius: 24px;
+  height: 52px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  background: #159a09;
+  color: #faf8f8;
+  box-shadow: 0 4px 16px rgba(43,226,27,0.10);
+  letter-spacing: 0.01em;
+  --background: #159a09;
+  --color: #fbf9f9;
+  width: 100%;
+  text-transform: none;
+}
+
+
+.primary[disabled] {
+  opacity: 0.7;
+}
+
+
+.links {
+  width: 100%;
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.forgot {
+  color: #159a09;
+  font-size: 1rem;
+  text-decoration: underline;
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+.register-link {
+  color: #888;
+  font-size: 1rem;
+}
+.register-link a {
+  color: #159a09;
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 2px;
+}
+
+
+/* Errores */
+.error {
+  display: block;
+  margin: -4px 6px 8px;
+  font-size: 12px;
+  color: #d84a4a;
+}
+
+/* Toolbar: marca centrada y limpia */
+.brand {
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
