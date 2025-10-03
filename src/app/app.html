@@ -1,10 +1,65 @@
-<ion-card>
-  <ion-card-header>
-    <ion-card-title>Card Title</ion-card-title>
-    <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
-  </ion-card-header>
+﻿<ion-app>
+  <ion-menu contentId="main-content" menuId="main-menu" type="overlay" side="start">
+    <ion-header>
+      <ion-toolbar class="menu-toolbar">
+        <ion-title>Moka App</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list class="menu-list">
+        <ion-menu-toggle auto-hide="false">
+          <ion-item lines="none" routerDirection="root" routerLink="/inicio" routerLinkActive="active">
+            <ion-icon name="home-outline" slot="start"></ion-icon>
+            <ion-label>Inicio</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item lines="none" routerDirection="forward" routerLink="/cultivos" routerLinkActive="active">
+            <ion-icon name="leaf-outline" slot="start"></ion-icon>
+            <ion-label>Cultivos</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item lines="none" routerDirection="forward" routerLink="/inventario" routerLinkActive="active">
+            <ion-icon name="cube-outline" slot="start"></ion-icon>
+            <ion-label>Inventario</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item lines="none" routerDirection="forward" routerLink="/cooperativas" routerLinkActive="active">
+            <ion-icon name="people-outline" slot="start"></ion-icon>
+            <ion-label>Cooperativas</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item lines="none" routerDirection="forward" routerLink="/consejos" routerLinkActive="active">
+            <ion-icon name="bulb-outline" slot="start"></ion-icon>
+            <ion-label>Consejos</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item lines="none" routerDirection="forward" routerLink="/finanzas" routerLinkActive="active">
+            <ion-icon name="cash-outline" slot="start"></ion-icon>
+            <ion-label>Finanzas</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item lines="none" routerDirection="forward" routerLink="/personal" routerLinkActive="active">
+            <ion-icon name="people-circle-outline" slot="start"></ion-icon>
+            <ion-label>Personal</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item lines="none" routerDirection="forward" routerLink="/perfil" routerLinkActive="active">
+            <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+            <ion-label>Perfil</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
 
-  <ion-card-content>
-    Here's a small text description for the card content. Nothing more, nothing less.
-  </ion-card-content>
-</ion-card>
+  <div class="app-shell" id="main-content">
+    <ion-router-outlet></ion-router-outlet>
+  </div>
+</ion-app>

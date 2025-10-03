@@ -1,0 +1,117 @@
+﻿<ion-header translucent="true">
+  <ion-toolbar class="inicio-toolbar" mode="ios">
+    <ion-title>Inicio</ion-title>
+    <ion-buttons slot="end">
+      <ion-menu-button autoHide="false" class="menu-button" menu="main-menu" aria-label="Abrir menu">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="page">
+    <section class="welcome-section">
+      <h2 class="welcome-title">¡Bienvenid@ a Moka App!</h2>
+      <ng-container *ngIf="!loading.bienvenida; else skBienvenida">
+        <p class="welcome-caption" *ngIf="saludoSecundario">{{ saludoSecundario }}</p>
+      </ng-container>
+    </section>
+    <ng-template #skBienvenida>
+      <ion-skeleton-text animated style="width: 60%; height: 20px"></ion-skeleton-text>
+    </ng-template>
+
+    <section class="calendar-section">
+      <ng-container *ngIf="!loading.calendario; else skCalendario">
+        <div class="calendar-card">
+          <ion-item lines="none" class="calendar-item">
+            <ion-datetime
+              [value]="selectedDateIso"
+              presentation="date"
+              locale="es-ES"
+              (ionChange)="onDateChange($event)">
+            </ion-datetime>
+          </ion-item>
+        </div>
+        <ion-button fill="clear" size="small" class="calendar-link" (click)="abrirCalendario()" *ngIf="calendario?.url">
+          Ver calendario completo
+          <ion-icon slot="end" name="open-outline"></ion-icon>
+        </ion-button>
+      </ng-container>
+      <ng-template #skCalendario>
+        <ion-skeleton-text animated style="width: 100%; height: 290px"></ion-skeleton-text>
+      </ng-template>
+    </section>
+
+    <section class="indicadores-section">
+      <h3>Indicadores</h3>
+      <ng-container *ngIf="!loading.indicadores; else skIndicadores">
+        <div *ngIf="indicadoresVm.length; else noIndicadores" class="indicadores-list">
+          <div class="indicador-card" *ngFor="let ind of indicadoresVm">
+            <div class="indicador-body">
+              <span class="indicador-label">{{ ind.label }}</span>
+              <span class="indicador-value">{{ ind.displayValue }}</span>
+              <span class="indicador-subtitle">{{ ind.subtitle }}</span>
+            </div>
+            <div class="indicador-media" [ngClass]="ind.mediaClass" [attr.aria-label]="ind.label">
+              <ion-icon [name]="ind.icon"></ion-icon>
+            </div>
+          </div>
+        </div>
+        <ng-template #noIndicadores>
+          <ion-note>Indicador no disponible por el momento</ion-note>
+        </ng-template>
+      </ng-container>
+      <ng-template #skIndicadores>
+        <div class="indicadores-list">
+          <ion-skeleton-text animated style="width: 100%; height: 92px"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 100%; height: 92px"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 100%; height: 92px"></ion-skeleton-text>
+        </div>
+      </ng-template>
+    </section>
+
+    <section class="cooperativas-section">
+      <div class="section-header">
+        <h3>Cooperativas</h3>
+        <ion-button size="small" fill="solid" color="success" (click)="verMasCooperativas()">Ver más</ion-button>
+      </div>
+      <ng-container *ngIf="!loading.cooperativas; else skCoops">
+        <div *ngIf="cooperativas.length; else noCoops" class="cooperativas-list">
+          <ion-card *ngFor="let c of cooperativas" class="coop-card">
+            <div class="coop-image" *ngIf="c.logo_url; else placeholder" [style.backgroundImage]="'url(' + c.logo_url + ')'" role="img" [attr.aria-label]="c.nombre"></div>
+            <ng-template #placeholder>
+              <div class="coop-image placeholder"></div>
+            </ng-template>
+            <ion-card-header>
+              <ion-card-title>{{ c.nombre }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p class="coop-summary">{{ c.resumen }}</p>
+              <ion-note *ngIf="c.ubicacion">{{ c.ubicacion }}</ion-note>
+            </ion-card-content>
+          </ion-card>
+        </div>
+        <ng-template #noCoops>
+          <ion-note>Por ahora no hay cooperativas disponibles</ion-note>
+        </ng-template>
+      </ng-container>
+      <ng-template #skCoops>
+        <div class="cooperativas-list">
+          <ion-skeleton-text animated style="width: 240px; height: 220px"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 240px; height: 220px"></ion-skeleton-text>
+        </div>
+      </ng-template>
+    </section>
+  </div>
+
+  <ion-toast
+    [isOpen]="showToast"
+    (didDismiss)="showToast=false"
+    [message]="toastMsg"
+    [duration]="3000"
+    [color]="toastColor"
+    position="top">
+  </ion-toast>
+</ion-content>
+
