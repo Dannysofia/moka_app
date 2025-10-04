@@ -1,0 +1,40 @@
+<ion-header translucent="true">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/auth" text="" color="dark"></ion-back-button>
+    </ion-buttons>
+    <!--<ion-title style="font-weight:700;">Registro</ion-title>-->
+</ion-header>
+
+<ion-content [fullscreen]="true" class="register-content">
+  <div class="auth-card">
+    <h1 class="welcome">Registro</h1>
+    <div class="subtitle">Bienvenido a la comunidad de caficultores.</div>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <label class="field-label">Nombre</label>
+      <ion-item lines="none" class="field">
+        <ion-input type="text" formControlName="nombre" placeholder="Ingresa tu nombre"></ion-input>
+      </ion-item>
+      <label class="field-label">Apellidos</label>
+      <ion-item lines="none" class="field">
+        <ion-input type="text" formControlName="apellido" placeholder="Ingresa tus apellidos"></ion-input>
+      </ion-item>
+      <label class="field-label">Teléfono</label>
+      <ion-item lines="none" class="field">
+        <ion-input type="tel" formControlName="telefono" placeholder="Ingresa tu teléfono"></ion-input>
+      </ion-item>
+      <label class="field-label">Correo electrónico</label>
+      <ion-item lines="none" class="field">
+        <ion-input type="email" formControlName="correo" placeholder="Ingresa tu correo electrónico"></ion-input>
+      </ion-item>
+      <label class="field-label">Contraseña</label>
+      <ion-item lines="none" class="field">
+        <ion-input type="password" formControlName="password" placeholder="Ingresa tu contraseña"></ion-input>
+      </ion-item>
+      <ion-button expand="block" type="submit" [disabled]="loading">Registrarse</ion-button>
+      <ion-note *ngIf="errorMsg" color="danger">{{ errorMsg }}</ion-note>
+    </form>
+    <div class="bottom-link">
+      ¿Ya tienes una cuenta? <b (click)="goToLogin()">Inicia sesión</b>
+    </div>
+  </div>
+</ion-content>
