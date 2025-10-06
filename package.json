@@ -33,6 +33,7 @@
     "@capacitor/core": "^7.4.3",
     "@ionic/angular": "^8.7.5",
     "@supabase/supabase-js": "^2.58.0",
+    "chart.js": "^4.5.0",
     "ionicons": "^8.0.13",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

@@ -1,0 +1,82 @@
+<ion-header>
+  <ion-toolbar color="success">
+    <ion-title>Gestión Financiera</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="content-wrapper">
+    
+    <ion-card class="finance-card">
+      <ion-card-header>
+        <ion-card-subtitle>Resumen Financiero</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="summary-list">
+          
+          <div class="summary-item">
+            <span class="summary-label">Ingresos del Mes</span>
+            <span class="summary-value positive">{{ ingresos | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Gastos del Mes</span>
+            <span class="summary-value negative">{{ gastos | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Ahorro Acumulado</span>
+            <span class="summary-value neutral">{{ ahorro | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Inversiones</span>
+            <span class="summary-value neutral">{{ inversiones | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+
+          <div class="total-section">
+            <div class="total-label">Balance Total</div>
+            <div class="total-amount">{{ balanceTotal | currency:'USD':'symbol':'1.2-2' }}</div>
+          </div>
+
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Diagrama de Pastel -->
+    <ion-card class="chart-card">
+      <ion-card-header>
+        <ion-card-subtitle>Distribución de Gastos</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="chart-container">
+          <canvas #pieChart></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #10b981;"></span>
+            <span class="legend-label">Comida (35%)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #3b82f6;"></span>
+            <span class="legend-label">Transporte (25%)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #f59e0b;"></span>
+            <span class="legend-label">Servicios (20%)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #8b5cf6;"></span>
+            <span class="legend-label">Entretenimiento (12%)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #ef4444;"></span>
+            <span class="legend-label">Otros (8%)</span>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+</ion-content>
