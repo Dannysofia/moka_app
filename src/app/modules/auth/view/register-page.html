@@ -1,40 +1,86 @@
-<ion-header translucent="true">
+<ion-header>
+  <ion-toolbar color="light">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/auth" text="" color="dark"></ion-back-button>
+      <ion-back-button defaultHref="/auth" text=""></ion-back-button>
     </ion-buttons>
-    <!--<ion-title style="font-weight:700;">Registro</ion-title>-->
+  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="register-content">
   <div class="auth-card">
     <h1 class="welcome">Registro</h1>
     <div class="subtitle">Bienvenido a la comunidad de caficultores.</div>
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
       <label class="field-label">Nombre</label>
       <ion-item lines="none" class="field">
         <ion-input type="text" formControlName="nombre" placeholder="Ingresa tu nombre"></ion-input>
       </ion-item>
+      @if (form.get('nombre')?.touched && form.get('nombre')?.invalid) {
+      <ion-note class="error">El nombre es obligatorio.</ion-note>
+      }
+
       <label class="field-label">Apellidos</label>
       <ion-item lines="none" class="field">
-        <ion-input type="text" formControlName="apellido" placeholder="Ingresa tus apellidos"></ion-input>
+        <ion-input
+          type="text"
+          formControlName="apellido"
+          placeholder="Ingresa tus apellidos"
+        ></ion-input>
       </ion-item>
+      @if (form.get('apellido')?.touched && form.get('apellido')?.invalid) {
+      <ion-note class="error">El apellido es obligatorio.</ion-note>
+      }
+
       <label class="field-label">Teléfono</label>
       <ion-item lines="none" class="field">
-        <ion-input type="tel" formControlName="telefono" placeholder="Ingresa tu teléfono"></ion-input>
+        <ion-input
+          type="tel"
+          formControlName="telefono"
+          placeholder="Ingresa tu teléfono"
+        ></ion-input>
       </ion-item>
+      @if (form.get('telefono')?.touched && form.get('telefono')?.invalid) {
+      <ion-note
+        class="error"
+        >{{ form.get('telefono')?.errors?.['required'] ? 'El teléfono es obligatorio.' : 'Debe tener 10 dígitos numéricos.' }}</ion-note
+      >
+      }
+
       <label class="field-label">Correo electrónico</label>
       <ion-item lines="none" class="field">
-        <ion-input type="email" formControlName="correo" placeholder="Ingresa tu correo electrónico"></ion-input>
+        <ion-input
+          type="email"
+          formControlName="correo"
+          placeholder="Ingresa tu correo electrónico"
+        ></ion-input>
       </ion-item>
+      @if (form.get('correo')?.touched && form.get('correo')?.invalid) {
+      <ion-note
+        class="error"
+        >{{ form.get('correo')?.errors?.['required'] ? 'El correo es obligatorio.' : 'Correo inválido.' }}</ion-note
+      >
+      }
+
       <label class="field-label">Contraseña</label>
       <ion-item lines="none" class="field">
-        <ion-input type="password" formControlName="password" placeholder="Ingresa tu contraseña"></ion-input>
+        <ion-input
+          type="password"
+          formControlName="password"
+          placeholder="Ingresa tu contraseña"
+        ></ion-input>
       </ion-item>
+      @if (form.get('password')?.touched && form.get('password')?.invalid) {
+      <ion-note
+        class="error"
+        >{{ form.get('password')?.errors?.['required'] ? 'La contraseña es obligatoria.' : 'Mínimo 6 caracteres.' }}</ion-note
+      >
+      }
+
       <ion-button expand="block" type="submit" [disabled]="loading">Registrarse</ion-button>
       <ion-note *ngIf="errorMsg" color="danger">{{ errorMsg }}</ion-note>
     </form>
-    <div class="bottom-link">
-      ¿Ya tienes una cuenta? <b (click)="goToLogin()">Inicia sesión</b>
-    </div>
+
+    <div class="bottom-link">¿Ya tienes una cuenta? <b (click)="goToLogin()">Inicia sesión</b></div>
   </div>
 </ion-content>

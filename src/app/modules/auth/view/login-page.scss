@@ -1,6 +1,13 @@
-ion-header {
-  --background: #fff;
-  box-shadow: none;
+:host {
+  ion-content.login-content {
+    --background: #fff;
+  }
+}
+
+.success {
+  display: block;
+  margin: 8px 6px 12px;
+  font-size: 14px;
 }
 .login-full {
   min-height: 100vh;
@@ -51,16 +58,6 @@ ion-header {
   padding: 8px;
 }
 
-.brand-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #222;
-  letter-spacing: 0.18em;
-  margin-bottom: 32px;
-  text-align: center;
-  font-family: 'Montserrat', 'Arial', sans-serif;
-}
-
 .welcome {
   margin: 0 0 32px 0;
   font-size: 1.7rem;
@@ -89,7 +86,6 @@ ion-header {
   min-height: 48px;
 }
 
-
 ion-input {
   font-size: 1.13rem;
   color: #222;
@@ -105,7 +101,7 @@ ion-input {
   font-weight: 700;
   background: #159a09;
   color: #faf8f8;
-  box-shadow: 0 4px 16px rgba(43,226,27,0.10);
+  box-shadow: 0 4px 16px rgba(43, 226, 27, 0.1);
   letter-spacing: 0.01em;
   --background: #159a09;
   --color: #fbf9f9;
@@ -113,11 +109,9 @@ ion-input {
   text-transform: none;
 }
 
-
 .primary[disabled] {
   opacity: 0.7;
 }
-
 
 .links {
   width: 100%;
@@ -144,7 +138,6 @@ ion-input {
   text-decoration: none;
   margin-left: 2px;
 }
-
 
 /* Errores */
 .error {
