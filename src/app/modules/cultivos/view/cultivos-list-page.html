@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Cultivos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="crear()" color="success">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Crear cultivo
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list *ngIf="cultivos && cultivos.length; else vacio">
+    <ion-item lines="full" button="true" *ngFor="let c of cultivos" (click)="verTareas(c.id)">
+      <ion-label>
+        <h2>{{ c.nombre }}</h2>
+        <p>Tipo: {{ c.tipo }} Siembra: {{ c.fechaSiembra }} Area: {{ c.area | number:'1.2-2' }}</p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="$event.stopPropagation(); editar(c.id)">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="$event.stopPropagation(); verTareas(c.id)">
+          <ion-icon name="list-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" color="danger" (click)="$event.stopPropagation(); eliminar(c)">
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #vacio>
+    <div class="empty">
+      Aún no tiene cultivos registrados, cree el primero para empezar
+    </div>
+  </ng-template>
+
+  <ion-toast [isOpen]="showToast" (didDismiss)="showToast=false" [message]="toastMsg" [color]="toastColor" duration="2500" position="top"></ion-toast>
+</ion-content>
+

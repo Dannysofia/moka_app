@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/cultivos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Tareas<span *ngIf="cultivoNombre"> - {{ cultivoNombre }}</span></ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="crear()" color="success">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Crear tarea
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-list *ngIf="tareas && tareas.length; else vacio">
+    <ion-item *ngFor="let t of tareas">
+      <ion-label>
+        <h2>{{ t.tipo }} - {{ t.fechaProgramada }}</h2>
+        <p>Estado: {{ t.estado }}<span *ngIf="t.notas"> - {{ t.notas }}</span></p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="editar(t)"><ion-icon name="create-outline"></ion-icon></ion-button>
+        <ion-button fill="clear" color="danger" (click)="eliminar(t)"><ion-icon name="trash-outline"></ion-icon></ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #vacio>
+    <div class="empty">Este cultivo no tiene tareas registradas</div>
+  </ng-template>
+
+  <ion-toast [isOpen]="showToast" (didDismiss)="showToast=false" [message]="toastMsg" [color]="toastColor" duration="2500" position="top"></ion-toast>
+</ion-content>
+
+
+
+
+

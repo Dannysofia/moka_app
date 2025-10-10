@@ -1,0 +1,51 @@
+﻿<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="'/cultivos/' + (cultivoId || '') + '/tareas'"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <ion-item class="field" lines="inset">
+      <ion-label position="stacked">Tipo de tarea</ion-label>
+      <ion-select formControlName="tipo" interface="popover" placeholder="Seleccione">
+        <ion-select-option *ngFor="let t of tipos" [value]="t.codigo">{{ t.nombre }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    @if (form.get('tipo')?.touched && form.get('tipo')?.invalid) {
+      <ion-note class="error">Seleccione un tipo</ion-note>
+    }
+
+    @if (tareaId) {
+      <ion-item class="field" lines="inset">
+        <ion-label position="stacked">Estado</ion-label>
+        <ion-select formControlName="estado" interface="popover" placeholder="Seleccione estado">
+          <ion-select-option *ngFor="let e of estados" [value]="e.codigo">{{ e.nombre }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    }
+
+    <ion-item class="field" lines="inset">
+      <ion-label position="stacked">Fecha programada</ion-label>
+      <ion-input type="date" formControlName="fechaProgramada"></ion-input>
+    </ion-item>
+    @if (form.get('fechaProgramada')?.touched && form.get('fechaProgramada')?.invalid) {
+      <ion-note class="error">La fecha es obligatoria</ion-note>
+    }
+
+    <ion-item class="field" lines="inset">
+      <ion-label position="stacked">Notas</ion-label>
+      <ion-textarea formControlName="notas" maxlength="200" autoGrow="true" placeholder="Opcional"></ion-textarea>
+    </ion-item>
+
+    <div class="actions">
+      <ion-button type="button" color="medium" (click)="cancelar()">Cancelar</ion-button>
+      <ion-button type="submit" color="success" [disabled]="loading || form.invalid">Guardar</ion-button>
+    </div>
+  </form>
+
+  <ion-toast [isOpen]="showToast" (didDismiss)="showToast=false" [message]="toastMsg" [color]="toastColor" duration="2500" position="top"></ion-toast>
+</ion-content>

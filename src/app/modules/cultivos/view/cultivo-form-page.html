@@ -1,0 +1,67 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/cultivos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ title }}</ion-title>
+    @if (id) {
+      <ion-buttons slot="end">
+        <ion-button (click)="irATareas()">
+          <ion-icon name="list-outline" slot="start"></ion-icon>
+          Tareas
+        </ion-button>
+      </ion-buttons>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <ion-item class="field" lines="inset">
+      <ion-label position="stacked">Nombre</ion-label>
+      <ion-input formControlName="nombre" maxlength="50" placeholder="Ej. Lote Norte"></ion-input>
+    </ion-item>
+    @if (form.get('nombre')?.touched && form.get('nombre')?.invalid) {
+      <ion-note class="error">Por favor complete el campo nombre</ion-note>
+    }
+
+    <ion-item class="field" lines="inset">
+      <ion-label position="stacked">Tipo</ion-label>
+      <ion-select formControlName="tipo" interface="popover" placeholder="Seleccione un tipo">
+        <ion-select-option *ngFor="let t of tipos" [value]="t.codigo">{{ t.nombre }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    @if (form.get('tipo')?.touched && form.get('tipo')?.invalid) {
+      <ion-note class="error">Seleccione un tipo</ion-note>
+    }
+
+    <ion-item class="field" lines="inset">
+      <ion-label position="stacked">Fecha de siembra</ion-label>
+      <ion-input type="date" formControlName="fechaSiembra"></ion-input>
+    </ion-item>
+    @if (form.get('fechaSiembra')?.touched && form.get('fechaSiembra')?.invalid) {
+      <ion-note class="error">La fecha es obligatoria</ion-note>
+    }
+
+    <ion-item class="field" lines="inset">
+      <ion-label position="stacked">Área (ha)</ion-label>
+      <ion-input type="number" formControlName="area" step="0.01" placeholder="Ej. 1.50"></ion-input>
+    </ion-item>
+    @if (form.get('area')?.touched && form.get('area')?.invalid) {
+      <ion-note class="error">El área debe ser mayor a 0</ion-note>
+    }
+
+    <ion-item class="field" lines="inset">
+      <ion-label position="stacked">Notas</ion-label>
+      <ion-textarea formControlName="notas" maxlength="250" autoGrow="true" placeholder="Opcional"></ion-textarea>
+    </ion-item>
+
+    <div class="actions">
+      <ion-button type="button" color="medium" (click)="cancelar()">Cancelar</ion-button>
+      <ion-button type="submit" color="success" [disabled]="loading || form.invalid">Guardar</ion-button>
+    </div>
+  </form>
+
+  <ion-toast [isOpen]="showToast" (didDismiss)="showToast=false" [message]="toastMsg" [color]="toastColor" duration="2500" position="top"></ion-toast>
+</ion-content>
+
