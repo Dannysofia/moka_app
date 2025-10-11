@@ -1,6 +1,17 @@
 <ion-header>
   <ion-toolbar color="success">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inicio" text=""></ion-back-button>
+    </ion-buttons>
     <ion-title>Gestión Financiera</ion-title>
+  </ion-toolbar>
+  
+  <!-- Barra de fecha -->
+  <ion-toolbar class="date-toolbar">
+    <div class="date-container">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <span>{{ fechaActual }}</span>
+    </div>
   </ion-toolbar>
 </ion-header>
 
@@ -54,25 +65,9 @@
           <canvas #pieChart></canvas>
         </div>
         <div class="chart-legend">
-          <div class="legend-item">
-            <span class="legend-color" style="background-color: #10b981;"></span>
-            <span class="legend-label">Comida (35%)</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-color" style="background-color: #3b82f6;"></span>
-            <span class="legend-label">Transporte (25%)</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-color" style="background-color: #f59e0b;"></span>
-            <span class="legend-label">Servicios (20%)</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-color" style="background-color: #8b5cf6;"></span>
-            <span class="legend-label">Entretenimiento (12%)</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-color" style="background-color: #ef4444;"></span>
-            <span class="legend-label">Otros (8%)</span>
+          <div class="legend-item" *ngFor="let item of distribucionGastos; let i = index">
+            <span class="legend-color" [style.background-color]="colores[i]"></span>
+            <span class="legend-label">{{item.categoria}} ({{item.porcentaje}}%)</span>
           </div>
         </div>
       </ion-card-content>

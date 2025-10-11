@@ -1,0 +1,195 @@
+<ion-header>
+  <ion-toolbar color="success">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inicio" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Gestión de Personal</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="abrirModalRegistro()">
+        <ion-icon name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+  <ion-toolbar class="date-toolbar">
+    <div class="date-container">
+      <ion-icon name="people-outline"></ion-icon>
+      <span>{{ empleados.length }} Empleados Registrados</span>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="content-wrapper">
+    
+    <!-- Tarjetas de resumen -->
+    <div class="summary-cards">
+      <ion-card class="summary-card">
+        <ion-card-content>
+          <div class="summary-icon">
+            <ion-icon name="people"></ion-icon>
+          </div>
+          <div class="summary-info">
+            <div class="summary-number">{{ empleados.length }}</div>
+            <div class="summary-label">Total</div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="summary-card active">
+        <ion-card-content>
+          <div class="summary-icon active">
+            <ion-icon name="checkmark-circle"></ion-icon>
+          </div>
+          <div class="summary-info">
+            <div class="summary-number">{{ empleadosActivos }}</div>
+            <div class="summary-label">Activos</div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="summary-card inactive">
+        <ion-card-content>
+          <div class="summary-icon inactive">
+            <ion-icon name="close-circle"></ion-icon>
+          </div>
+          <div class="summary-info">
+            <div class="summary-number">{{ empleadosInactivos }}</div>
+            <div class="summary-label">Inactivos</div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Buscador -->
+    <ion-searchbar 
+      placeholder="Buscar empleado..." 
+      [(ngModel)]="terminoBusqueda"
+      (ionInput)="filtrarEmpleados()"
+      class="custom-searchbar">
+    </ion-searchbar>
+
+    <!-- Lista de empleados -->
+    <div class="empleados-list">
+      <ion-card class="empleado-card" *ngFor="let empleado of empleadosFiltrados">
+        <ion-card-content>
+          <div class="empleado-header">
+            <div class="empleado-avatar">
+              <span>{{ obtenerIniciales(empleado.nombre) }}</span>
+            </div>
+            <div class="empleado-info">
+              <h3>{{ empleado.nombre }}</h3>
+              <p class="cargo">{{ empleado.rol }}</p>
+            </div>
+            <ion-badge [color]="empleado.estado === 'Activo' ? 'success' : 'medium'">
+              {{ empleado.estado }}
+            </ion-badge>
+          </div>
+
+          <div class="empleado-detalles">
+            <div class="detalle-item" *ngIf="empleado.telefono">
+              <ion-icon name="call-outline"></ion-icon>
+              <span>{{ empleado.telefono }}</span>
+            </div>
+            <div class="detalle-item" *ngIf="empleado.email">
+              <ion-icon name="mail-outline"></ion-icon>
+              <span>{{ empleado.email }}</span>
+            </div>
+          </div>
+
+          <div class="empleado-actions">
+            <ion-button fill="clear" size="small" (click)="editarEmpleado(empleado)">
+              <ion-icon slot="start" name="create-outline"></ion-icon>
+              Editar
+            </ion-button>
+            <ion-button fill="clear" size="small" color="danger" (click)="eliminarEmpleado(empleado.id)">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>
+              Eliminar
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Mensaje cuando no hay empleados -->
+      <div class="empty-state" *ngIf="empleadosFiltrados.length === 0">
+        <ion-icon name="people-outline"></ion-icon>
+        <h3>No hay empleados registrados</h3>
+        <p>Agrega tu primer empleado usando el botón +</p>
+      </div>
+    </div>
+
+  </div>
+</ion-content>
+
+<!-- Modal de Registro/Edición -->
+<ion-modal [isOpen]="mostrarModal" (didDismiss)="cerrarModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar color="success">
+        <ion-title>{{ empleadoEditar ? 'Editar' : 'Registrar' }} Empleado</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form>
+        <ion-item>
+          <ion-label position="stacked">Nombre *</ion-label>
+          <ion-input 
+            [(ngModel)]="formulario.nombre" 
+            name="nombre" 
+            placeholder="Nombre del empleado"
+            maxlength="80"
+            counter="true">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Rol *</ion-label>
+          <ion-select [(ngModel)]="formulario.rol" name="rol" placeholder="Seleccionar rol">
+            <ion-select-option value="Jornalero">Jornalero</ion-select-option>
+            <ion-select-option value="Capataz">Capataz</ion-select-option>
+            <ion-select-option value="Administrador">Administrador</ion-select-option>
+            <ion-select-option value="Otro">Otro</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Teléfono</ion-label>
+          <ion-input 
+            [(ngModel)]="formulario.telefono" 
+            name="telefono" 
+            type="tel" 
+            placeholder="300 123 4567">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input 
+            [(ngModel)]="formulario.email" 
+            name="email" 
+            type="email" 
+            placeholder="ejemplo@email.com">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Estado *</ion-label>
+          <ion-select [(ngModel)]="formulario.estado" name="estado" placeholder="Seleccionar estado">
+            <ion-select-option value="Activo">Activo</ion-select-option>
+            <ion-select-option value="Inactivo">Inactivo</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-button expand="block" color="success" (click)="guardarEmpleado()" class="ion-margin-top">
+          {{ empleadoEditar ? 'Actualizar' : 'Guardar' }} Empleado
+        </ion-button>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

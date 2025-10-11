@@ -28,36 +28,65 @@ export class FinancePage implements OnInit, AfterViewInit {
   inversiones: number = 8500.00;
   balanceTotal: number = 23129.50;
 
-  constructor() { }
+  // Distribución de gastos
+  distribucionGastos = [
+    { categoria: 'Comida', porcentaje: 35, monto: 1197.18 },
+    { categoria: 'Transporte', porcentaje: 25, monto: 855.13 },
+    { categoria: 'Servicios', porcentaje: 20, monto: 684.10 },
+    { categoria: 'Entretenimiento', porcentaje: 12, monto: 410.46 },
+    { categoria: 'Otros', porcentaje: 8, monto: 273.64 }
+  ];
+
+  // Colores para el gráfico
+  colores = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444'];
+
+  fechaActual: string = '';
+  private chart: any;
+
+  constructor() { 
+    this.establecerFecha();
+  }
 
   ngOnInit() {
-    this.calcularBalance();
+    // Puedes agregar lógica adicional aquí si necesitas
   }
 
   ngAfterViewInit() {
-    this.crearGraficoPastel();
+    setTimeout(() => this.crearGraficoPastel(), 100);
   }
 
-  calcularBalance() {
-    this.balanceTotal = this.ingresos - this.gastos + this.ahorro + this.inversiones;
+  /**
+   * Establecer fecha actual formateada
+   */
+  establecerFecha() {
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const fecha = new Date();
+    this.fechaActual = `${meses[fecha.getMonth()]} ${fecha.getFullYear()}`;
   }
 
+  /**
+   * Crear gráfico de pastel con datos quemados
+   */
   crearGraficoPastel() {
+    if (!this.pieChart) return;
+
     const ctx = this.pieChart.nativeElement.getContext('2d');
+
+    if (this.chart) {
+      this.chart.destroy();
+    }
+
+    const labels = this.distribucionGastos.map(d => d.categoria);
+    const data = this.distribucionGastos.map(d => d.porcentaje);
     
-    new Chart(ctx, {
+    this.chart = new Chart(ctx, {
       type: 'pie',
       data: {
-        labels: ['Comida', 'Transporte', 'Servicios', 'Entretenimiento', 'Otros'],
+        labels: labels,
         datasets: [{
-          data: [35, 25, 20, 12, 8],
-          backgroundColor: [
-            '#10b981',
-            '#3b82f6',
-            '#f59e0b',
-            '#8b5cf6',
-            '#ef4444'
-          ],
+          data: data,
+          backgroundColor: this.colores,
           borderWidth: 0
         }]
       },
@@ -70,22 +99,15 @@ export class FinancePage implements OnInit, AfterViewInit {
           },
           tooltip: {
             callbacks: {
-              label: function(context) {
-                return context.label + ': ' + context.parsed + '%';
+              label: (context) => {
+                const item = this.distribucionGastos[context.dataIndex];
+                return `${context.label}: ${item.porcentaje}% ($${item.monto.toFixed(2)})`;
               }
             }
           }
         }
       }
     });
-  }
-
-  actualizarDatos() {
-    // Lógica para actualizar datos desde API
-  }
-
-  verDetalles(tipo: string) {
-    console.log('Ver detalles de:', tipo);
   }
 
 }
