@@ -1,4 +1,32 @@
-.form { padding: 12px; }
-.field { margin-bottom: 10px; }
-.actions { display: flex; gap: 8px; margin-top: 12px; }
-.error { display: block; margin: 6px 8px; color: #d84a4a; font-size: 12px; }
+.form {
+  padding: 12px;
+}
+.field {
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.error {
+  display: block;
+  margin: 6px 8px;
+  color: #d84a4a;
+  font-size: 12px;
+}
+.guardar {
+  background: #159a09;
+  --background:#159a09;
+  color: white;
+  border-radius: 5px;
+  flex: 1;
+}
+.cancelar {
+  background: #717070;
+  --background:#717070;
+  color: #ffff;
+  border-radius: 5px;
+  flex: 1;
+}

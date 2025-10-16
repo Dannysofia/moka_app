@@ -25,17 +25,17 @@ ion-menu ion-content {
 .menu-list ion-item {
   --background: #ecfdf5;
   --border-radius: 14px;
-  --background-focused: #34d399;
-  --background-activated: #34d399;
-  --background-hover: #34d399;
-  --color: #047857;
-  --color-activated: #ffffff;
-  --color-focused: #ffffff;
-  --color-hover: #ffffff;
+  --background-focused: #e8f7ee;
+  --background-activated: #e8f7ee;
+  --background-hover: #f0fdf4;
+  --color: #159a09;
+  --color-activated: #159a09;
+  --color-focused: #159a09;
+  --color-hover: #159a09;
   --ripple-color: rgba(16, 185, 129, 0.35);
   --min-height: 48px;
   margin: 4px 8px;
-  color: #047857;
+  color: #159a09;
   font-weight: 600;
   transition: background 0.2s ease, color 0.2s ease;
 }
@@ -45,10 +45,8 @@ ion-menu ion-content {
   color: currentColor;
 }
 
-.menu-list ion-item.active,
-.menu-list ion-item.activated,
-.menu-list ion-item:hover {
-  --background: #34d399;
+.menu-list ion-item.active {
+  --background: #71be6a;
   color: #ffffff;
 }
 

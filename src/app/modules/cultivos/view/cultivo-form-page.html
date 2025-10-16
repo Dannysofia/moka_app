@@ -57,8 +57,8 @@
     </ion-item>
 
     <div class="actions">
-      <ion-button type="button" color="medium" (click)="cancelar()">Cancelar</ion-button>
-      <ion-button type="submit" color="success" [disabled]="loading || form.invalid">Guardar</ion-button>
+      <ion-button type="button" class="cancelar" (click)="cancelar()">Cancelar</ion-button>
+      <ion-button type="submit" class="guardar" [disabled]="loading || form.invalid">Guardar</ion-button>
     </div>
   </form>
 

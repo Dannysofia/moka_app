@@ -89,4 +89,11 @@ export class TareasListPage implements OnInit {
   }
 
   private alert(msg: string, color: 'success'|'warning'|'danger') { this.toastMsg = msg; this.toastColor = color; this.showToast = true; }
+
+  statusClass(estado: string | undefined): string {
+    const e = (estado || '').toString().toLowerCase();
+    if (e.startsWith('comp')) return 'completed'; // Completada / COMPLETADA / COMP
+    if (e.startsWith('proc')) return 'processed'; // Procesada / PROCESADA / PROC
+    return 'pending'; // Pendiente / PENDIENTE / PEND
+  }
 }

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CultivosService } from '../services/cultivos-services';
 import { Cultivo } from '../model/cultivos-model';
@@ -8,7 +9,7 @@ import { Cultivo } from '../model/cultivos-model';
 @Component({
   selector: 'app-cultivos-list',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, FormsModule],
   templateUrl: './cultivos-list-page.html',
   styleUrls: ['./cultivos-list-page.scss'],
 })
@@ -16,6 +17,7 @@ export class CultivosListPage implements OnInit {
   loading = true;
   error = '';
   cultivos: Cultivo[] = [];
+  searchTerm = '';
 
   toastMsg = '';
   toastColor: 'success' | 'warning' | 'danger' = 'success';
@@ -83,5 +85,14 @@ export class CultivosListPage implements OnInit {
     } finally {
       event?.target?.complete?.();
     }
+  }
+
+  get filteredCultivos(): Cultivo[] {
+    const term = this.searchTerm?.trim().toLowerCase();
+    if (!term) return this.cultivos;
+    return this.cultivos.filter(c => {
+      const values = [c.nombre, c.tipo, c.fechaSiembra, String(c.area ?? '')];
+      return values.some(v => (v || '').toString().toLowerCase().includes(term));
+    });
   }
 }
