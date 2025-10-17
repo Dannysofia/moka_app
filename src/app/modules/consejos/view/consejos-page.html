@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inicio" text="Volver al inicio" color="success"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Consejos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="grid" *ngIf="consejos && consejos.length; else vacio">
+    <div class="card" *ngFor="let c of consejos; trackBy: trackById" (click)="verDetalle(c.id)">
+      <div class="thumb" [class.placeholder]="!c.imagen_url" [style.backgroundImage]="c.imagen_url ? 'url(' + c.imagen_url + ')' : ''" role="img" [attr.aria-label]="c.titulo"></div>
+      <div class="body">
+        <div class="title">{{ c.titulo }}</div>
+        <div class="content" *ngIf="c.contenido as texto">{{ texto }}</div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #vacio>
+    <div class="empty">Aún no hay consejos disponibles</div>
+  </ng-template>
+
+  <ion-toast [isOpen]="showToast" [message]="toastMsg" [color]="toastColor" duration="2200" (didDismiss)="showToast = false"></ion-toast>
+</ion-content>
