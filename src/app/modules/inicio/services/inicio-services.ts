@@ -50,15 +50,17 @@ export class InicioService {
 
     try {
       const { data, error } = await this.supa.client
-        .from('config')
-        .select('valor')
-        .eq('clave', 'calendario_url')
+        .from('calendario')
+        .select('calendario_url, created_at')
+        .eq('activo', true)
+        .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
       if (error) throw error;
-      if (!data?.valor) return null;
-      return { url: String(data.valor) };
+      const url = (data as any)?.calendario_url as string | undefined;
+      if (!url) return null;
+      return { url };
     } catch (error) {
       console.warn('Unable to fetch calendario from Supabase', error);
       return null;

@@ -1,9 +1,10 @@
 ﻿<ion-header translucent="true">
   <ion-toolbar class="inicio-toolbar" mode="ios">
+    <ion-buttons slot="start"><ion-button class="calendar-trigger" (click)="abrirCalendario()" [disabled]="loading.calendario" aria-label="Calendario agrÃ­cola" fill="clear"><ion-icon slot="icon-only" name="calendar-outline"></ion-icon></ion-button></ion-buttons>
     <ion-title>Inicio</ion-title>
     <ion-buttons slot="end">
       <ion-menu-button autoHide="false" class="menu-button" menu="main-menu" aria-label="Abrir menu">
-        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+        <ion-icon slot="icon-only" src="/svg/menu-outline.svg"></ion-icon>
       </ion-menu-button>
     </ion-buttons>
   </ion-toolbar>
@@ -21,27 +22,7 @@
       <ion-skeleton-text animated style="width: 60%; height: 20px"></ion-skeleton-text>
     </ng-template>
 
-    <section class="calendar-section">
-      <ng-container *ngIf="!loading.calendario; else skCalendario">
-        <div class="calendar-card">
-          <ion-item lines="none" class="calendar-item">
-            <ion-datetime
-              [value]="selectedDateIso"
-              presentation="date"
-              locale="es-ES"
-              (ionChange)="onDateChange($event)">
-            </ion-datetime>
-          </ion-item>
-        </div>
-        <ion-button fill="clear" size="small" class="calendar-link" (click)="abrirCalendario()" *ngIf="calendario?.url">
-          Ver calendario completo
-          <ion-icon slot="end" name="open-outline"></ion-icon>
-        </ion-button>
-      </ng-container>
-      <ng-template #skCalendario>
-        <ion-skeleton-text animated style="width: 100%; height: 290px"></ion-skeleton-text>
-      </ng-template>
-    </section>
+    
 
     <section class="indicadores-section">
       <h3>Indicadores</h3>
@@ -54,7 +35,7 @@
               <span class="indicador-subtitle">{{ ind.subtitle }}</span>
             </div>
             <div class="indicador-media" [ngClass]="ind.mediaClass" [attr.aria-label]="ind.label">
-              <ion-icon [name]="ind.icon"></ion-icon>
+              <ion-icon [src]="'/svg/' + ind.icon + '.svg'"></ion-icon>
             </div>
           </div>
         </div>
@@ -113,5 +94,28 @@
     [color]="toastColor"
     position="top">
   </ion-toast>
+
+  <ion-modal [isOpen]="isCalendarioOpen" (didDismiss)="cerrarCalendario()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar mode="ios">
+        <ion-title>Calendario agrícola</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarCalendario()">
+            <ion-icon slot="icon-only" src="/svg/close-outline.svg"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ng-container *ngIf="calendario?.url as url; else noCalImg">
+        <ion-img [src]="url" alt="Calendario agrí­cola"></ion-img>
+      </ng-container>
+      <ng-template #noCalImg>
+        <ion-note>No hay calendario agrícola disponible.</ion-note>
+      </ng-template>
+    </ion-content>
+  </ng-template>
+</ion-modal>
 </ion-content>
 
