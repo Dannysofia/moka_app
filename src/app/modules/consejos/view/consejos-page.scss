@@ -1,0 +1,50 @@
+:host { display: block; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  padding: 16px 16px 24px;
+}
+
+.card {
+  background: #E8F5E9; /* verde claro */
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  padding: 12px;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.card:active { transform: scale(0.98); }
+
+.thumb {
+  width: 100%;
+  height: 96px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+}
+
+.thumb.placeholder {
+  background: linear-gradient(180deg, #f6fafa, #e6eeee);
+}
+
+.body { margin-top: 10px; }
+
+.title { font-size: 14px; font-weight: 600; line-height: 1.25; color: #1a1a1a; }
+
+.content {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #334155;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; /* clamp a 3 líneas */
+  overflow: hidden;
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: #6b7280;
+}
