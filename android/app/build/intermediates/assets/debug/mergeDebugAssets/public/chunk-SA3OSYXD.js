@@ -1,0 +1,1 @@
+import{Ea as i,P as t,Yb as e}from"./chunk-B3MZAJK4.js";import"./chunk-VI73JOY6.js";var r=class o{static \u0275fac=function(m){return new(m||o)};static \u0275mod=i({type:o});static \u0275inj=t({imports:[e]})};export{r as PerfilModule};
