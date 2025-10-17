@@ -1,0 +1,136 @@
+<ion-header>
+  <ion-toolbar color="success">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inicio" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cooperativas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="recargarDatos()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+  <ion-toolbar class="date-toolbar">
+    <div class="date-container">
+      <ion-icon name="people-circle-outline"></ion-icon>
+      <span>{{ cooperativas.length }} Cooperativas Disponibles</span>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="content-wrapper">
+    
+    <!-- Estado: Cargando -->
+    <div class="loading-state" *ngIf="cargando">
+      <ion-spinner color="success" name="crescent"></ion-spinner>
+      <p>Cargando cooperativas...</p>
+    </div>
+
+    <!-- Estado: Error -->
+    <div class="error-state" *ngIf="error && !cargando">
+      <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+      <h3>Error al cargar</h3>
+      <p>{{ mensajeError }}</p>
+      <ion-button color="success" (click)="recargarDatos()">
+        <ion-icon slot="start" name="refresh-outline"></ion-icon>
+        Reintentar
+      </ion-button>
+    </div>
+
+    <!-- Estado: Sin datos -->
+    <div class="empty-state" *ngIf="!cargando && !error && cooperativas.length === 0">
+      <ion-icon name="business-outline"></ion-icon>
+      <h3>Sin cooperativas</h3>
+      <p>Por ahora no hay cooperativas cargadas</p>
+    </div>
+
+    <!-- Lista de cooperativas -->
+    <div class="cooperativas-list" *ngIf="!cargando && !error && cooperativas.length > 0">
+      
+      <!-- Buscador -->
+      <ion-searchbar 
+        placeholder="Buscar cooperativa..." 
+        [(ngModel)]="terminoBusqueda"
+        (ionInput)="filtrarCooperativas()"
+        class="custom-searchbar">
+      </ion-searchbar>
+
+      <!-- Tarjetas de cooperativas -->
+      <ion-card class="cooperativa-card" *ngFor="let cooperativa of cooperativasFiltradas">
+        <ion-card-header>
+          <div class="card-header-content">
+            <div class="cooperativa-icon">
+              <ion-icon name="business"></ion-icon>
+            </div>
+            <div class="cooperativa-title">
+              <ion-card-title>{{ cooperativa.nombre }}</ion-card-title>
+              <ion-card-subtitle>
+                <ion-icon name="location-outline"></ion-icon>
+                {{ cooperativa.ubicacion }}
+              </ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+
+        <ion-card-content>
+          <!-- Datos de contacto -->
+          <div class="info-section">
+            <h4 class="section-title">
+              <ion-icon name="call-outline"></ion-icon>
+              Contacto
+            </h4>
+            <div class="info-grid">
+              <div class="info-item" *ngIf="cooperativa.telefono">
+                <ion-icon name="call"></ion-icon>
+                <span>{{ cooperativa.telefono }}</span>
+              </div>
+              <div class="info-item" *ngIf="cooperativa.email">
+                <ion-icon name="mail"></ion-icon>
+                <span>{{ cooperativa.email }}</span>
+              </div>
+              <div class="info-item" *ngIf="cooperativa.sitioWeb">
+                <ion-icon name="globe"></ion-icon>
+                <a [href]="cooperativa.sitioWeb" target="_blank">Visitar sitio</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Servicios principales -->
+          <div class="info-section">
+            <h4 class="section-title">
+              <ion-icon name="briefcase-outline"></ion-icon>
+              Servicios Principales
+            </h4>
+            <div class="servicios-tags">
+              <ion-chip 
+                *ngFor="let servicio of cooperativa.servicios" 
+                color="success" 
+                outline="true">
+                <ion-icon name="checkmark-circle"></ion-icon>
+                <ion-label>{{ servicio }}</ion-label>
+              </ion-chip>
+            </div>
+          </div>
+
+          <!-- Botón de acción -->
+          <div class="card-actions">
+            <ion-button expand="block" fill="outline" color="success" (click)="verDetalles(cooperativa)">
+              <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+              Ver más información
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Mensaje si no hay resultados de búsqueda -->
+      <div class="empty-state" *ngIf="cooperativasFiltradas.length === 0 && terminoBusqueda">
+        <ion-icon name="search-outline"></ion-icon>
+        <h3>Sin resultados</h3>
+        <p>No se encontraron cooperativas con "{{ terminoBusqueda }}"</p>
+      </div>
+    </div>
+
+  </div>
+</ion-content>
