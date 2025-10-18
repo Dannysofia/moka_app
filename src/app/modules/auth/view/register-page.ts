@@ -7,7 +7,7 @@ import { AuthService } from '../services/auth-services';
   selector: 'app-register',
   templateUrl: './register-page.html',
   styleUrls: ['./register-page.scss'],
-  standalone: false
+  standalone: false,
 })
 export class RegisterPage {
   form: FormGroup;
@@ -18,7 +18,7 @@ export class RegisterPage {
     this.form = this.fb.group({
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
-      telefono: ['', [Validators.required, Validators.pattern('^[0-9]{10,}$')]],
+      telefono: ['', [Validators.pattern('^[0-9]{10,}$')]],
       correo: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
@@ -26,7 +26,10 @@ export class RegisterPage {
 
   async onSubmit() {
     this.errorMsg = '';
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.loading = true;
     try {
       const { nombre, apellido, telefono, correo, password } = this.form.value;
@@ -39,10 +42,10 @@ export class RegisterPage {
         nombre,
         apellido,
         telefono,
-        user_id: user.id
+        user_id: user.id,
       });
-      // 3. Redirigir al login
-      await this.router.navigate(['/auth/login']);
+      // 3. Redirigir al login con bandera de registro exitoso
+      await this.router.navigate(['/auth/login'], { queryParams: { registered: '1' } });
     } catch (error: any) {
       this.errorMsg = error.message || 'Error al registrar usuario';
     } finally {

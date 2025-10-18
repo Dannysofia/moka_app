@@ -1,8 +1,9 @@
-<ion-header translucent="true">
+<ion-header>
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
-    <!--<ion-title class="brand">MOKA</ion-title>-->
+  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="login-content">
@@ -12,32 +13,57 @@
     </div>
     <h1 class="welcome">Inicio de sesión</h1>
 
+    <ion-toast
+      [isOpen]="toastOpen"
+      (didDismiss)="toastOpen = false"
+      [message]="successMsg"
+      color="success"
+      duration="2500"
+      position="top"
+      icon="checkmark-circle-outline"
+    >
+    </ion-toast>
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
       <label class="field-label">Correo electrónico</label>
       <ion-item lines="none" class="field">
-        <ion-input type="email" formControlName="email" placeholder="Ingresa tu correo electrónico" clear-input="true"></ion-input>
+        <ion-input
+          type="email"
+          formControlName="email"
+          placeholder="Ingresa tu correo electrónico"
+          clear-input="true"
+        ></ion-input>
       </ion-item>
 
       @if (form.get('email')?.touched && form.get('email')?.invalid) {
-        <ion-note class="error">
-          {{ form.get('email')?.errors?.['required'] ? 'El correo es obligatorio.' : 'Correo inválido.' }}
-        </ion-note>
+      <ion-note class="error">
+        {{ form.get('email')?.errors?.['required'] ? 'El correo es obligatorio.' : 'Correo inválido.' }}
+      </ion-note>
       }
 
       <label class="field-label">Contraseña</label>
       <ion-item lines="none" class="field">
-        <ion-input [type]="show ? 'text' : 'password'" formControlName="password" placeholder="Ingresa tu contraseña"></ion-input>
+        <ion-input
+          [type]="show ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="Ingresa tu contraseña"
+        ></ion-input>
         <ion-buttons slot="end">
-          <ion-button fill="clear" size="small" (click)="toggleShow()" aria-label="Mostrar contraseña">
+          <ion-button
+            fill="clear"
+            size="small"
+            (click)="toggleShow()"
+            aria-label="Mostrar contraseña"
+          >
             <ion-icon [name]="show ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-item>
 
       @if (form.get('password')?.touched && form.get('password')?.invalid) {
-        <ion-note class="error">
-          {{ form.get('password')?.errors?.['required'] ? 'La contraseña es obligatoria.' : 'Mínimo 6 caracteres.' }}
-        </ion-note>
+      <ion-note class="error">
+        {{ form.get('password')?.errors?.['required'] ? 'La contraseña es obligatoria.' : 'Mínimo 6 caracteres.' }}
+      </ion-note>
       }
 
       <ion-button class="primary" expand="block" type="submit" [disabled]="form.invalid">

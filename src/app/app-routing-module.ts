@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth-guard';
 
 /**Rutas por modulos */
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'auth' },
+  { path: '', pathMatch: 'full', redirectTo: 'inicio' },
+
   { path: 'inicio',       loadChildren: () => import('./modules/inicio/inicio-module').then(m => m.InicioModule) },
   { path: 'auth',         loadChildren: () => import('./modules/auth/auth-module').then(m => m.AuthModule) },
   { path: 'cultivos',     loadChildren: () => import('./modules/cultivos/cultivos-module').then(m => m.CultivosModule) },
@@ -15,11 +17,11 @@ const routes: Routes = [
   { path: 'finanzas',     loadChildren: () => import('./modules/finanzas/finanzas-module').then(m => m.FinanzasModule) },
   { path: 'perfil',       loadChildren: () => import('./modules/perfil/perfil-module').then(m => m.PerfilModule) },
 
-  { path: '**', redirectTo: 'auth' }
+  { path: '**', redirectTo: 'inicio' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

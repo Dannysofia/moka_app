@@ -1,0 +1,62 @@
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+}
+
+ion-searchbar {
+  padding: 8px 12px;
+  --border-radius: 10px;
+  --background: #ffffff;
+  --color: #1b1e28;
+  --placeholder-color: #6b7280;
+}
+
+.cultivo-card {
+  margin: 12px;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.cultivo-row {
+  display: flex;
+  align-items: center;
+}
+
+.cultivo-info {
+  flex: 1;
+  padding: 8px 12px;
+}
+
+.cultivo-info h2 {
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+
+.cultivo-info p {
+  margin: 0;
+  color: var(--ion-color-medium);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.cultivo-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 4px 8px 8px;
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cultivo-actions ion-button {
+  --padding-start: 6px;
+  --padding-end: 6px;
+  height: 36px;
+  color:#159a09;
+}
+h2 {
+  font-size: 18px;
+  margin: 0 0 8px;
+  font-weight: 700;
+}

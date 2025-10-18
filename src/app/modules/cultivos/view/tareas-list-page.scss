@@ -1,0 +1,72 @@
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+}
+
+.tarea-card {
+  margin: 12px;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.tarea-row {
+  display: flex;
+  align-items: center;
+}
+
+.status-col {
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.status-dot.pending {
+  background: var(--ion-color-danger);
+}
+.status-dot.processed {
+  background: var(--ion-color-warning);
+}
+.status-dot.completed {
+  background: var(--ion-color-success);
+}
+
+.tarea-info {
+  flex: 1;
+  padding: 8px 12px;
+}
+
+.tarea-info h2 {
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+
+.tarea-info p {
+  margin: 0;
+  color: var(--ion-color-medium);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.tarea-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 4px 8px 8px;
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.tarea-actions ion-button {
+  --padding-start: 6px;
+  --padding-end: 6px;
+  height: 36px;
+  color: #159a09;
+}

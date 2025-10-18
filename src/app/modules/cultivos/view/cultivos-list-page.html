@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Cultivos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="crear()" color="success">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Crear cultivo
+      </ion-button>
+      <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-searchbar
+    placeholder="Buscar cultivos"
+    [(ngModel)]="searchTerm"
+    showClearButton="focus"
+    debounce="200">
+  </ion-searchbar>
+
+  <div *ngIf="filteredCultivos && filteredCultivos.length; else vacio">
+    <ion-card class="cultivo-card" *ngFor="let c of filteredCultivos" (click)="verTareas(c.id)">
+      <ion-card-content>
+        <div class="cultivo-row">
+          <div class="cultivo-info">
+            <h2>{{ c.nombre }}</h2>
+            <p>Fecha de Siembra: {{ c.fechaSiembra }}</p>
+            <p>Área: {{ c.area | number:'1.2-2' }} ha</p>
+          </div>
+          <div class="cultivo-actions" (click)="$event.stopPropagation()">
+            <ion-button fill="clear" (click)="verTareas(c.id)">
+              <ion-icon name="list-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" (click)="editar(c.id)">
+              <ion-icon name="create-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" color="danger" (click)="eliminar(c)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <ng-template #vacio>
+    <div class="empty">
+      Aún no tiene cultivos registrados, cree el primero para empezar
+    </div>
+  </ng-template>
+
+</ion-content>

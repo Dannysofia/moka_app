@@ -99,6 +99,14 @@ ion-button[disabled] {
   font-weight: 400;
 }
 
+/* Errores de validación */
+.error {
+  display: block;
+  margin: -4px 6px 8px;
+  font-size: 12px;
+  color: #d84a4a;
+}
+
 .bottom-link b {
   color: #159a09;
   font-weight: 700;

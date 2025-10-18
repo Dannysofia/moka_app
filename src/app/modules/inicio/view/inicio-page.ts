@@ -32,7 +32,7 @@ export class InicioPage implements OnInit {
   };
 
   bienvenida: Bienvenida | null = null;
-  calendario: CalendarioAg | null = null;
+  calendario: any = null;
   indicadores: Indicador[] = [];
   cooperativas: Cooperativa[] = [];
   indicadoresVm: IndicadorVm[] = [];
@@ -50,24 +50,27 @@ export class InicioPage implements OnInit {
   private srv = inject(InicioService);
   private router = inject(Router);
 
+  // Modal de calendario
+  isCalendarioOpen = false;
+
   private readonly indicadorConfig: Record<TipoIndicador, { label: string; subtitle: string; mediaClass: string; icon: string; formatter: (valor: number) => string; }> = {
     cafe_interno: {
       label: 'Precio interno de referencia',
       subtitle: 'Por carga de 125 kg',
       mediaClass: 'media-cafe',
-      icon: 'cafe-outline',
+      icon: 'pricetag-outline',
       formatter: (valor) => this.formatCurrency(valor),
     },
     bolsa_ny: {
       label: 'Indicador',
-      subtitle: 'Calidad del cafÃ©',
+      subtitle: 'Calidad del café',
       mediaClass: 'media-bolsa',
       icon: 'analytics-outline',
       formatter: (valor) => this.formatNumber(valor, 0),
     },
     tasa_cambio: {
       label: 'Tasa de cambio',
-      subtitle: 'Pesos por dÃ³lar',
+      subtitle: 'Pesos por dólar',
       mediaClass: 'media-divisa',
       icon: 'cash-outline',
       formatter: (valor) => this.formatNumber(valor, 0),
@@ -82,11 +85,14 @@ export class InicioPage implements OnInit {
   }
 
   abrirCalendario() {
-    if (this.calendario?.url) {
-      window.open(this.calendario.url, '_blank');
-    } else {
+    this.isCalendarioOpen = true;
+    if (!this.calendario?.url) {
       this.alert('No hay calendario agricola disponible', 'warning');
     }
+  }
+
+  cerrarCalendario() {
+    this.isCalendarioOpen = false;
   }
 
   onDateChange(event: CustomEvent<DatetimeChangeEventDetail>) {
