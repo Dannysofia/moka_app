@@ -1,3 +1,0 @@
-com.moka.test
-style WhiteBackgroundDialogTheme
-style WhiteBackgroundTheme
