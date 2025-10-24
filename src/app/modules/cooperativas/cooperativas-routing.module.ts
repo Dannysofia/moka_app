@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./cooperativas/cooperativas.page').then(m => m.CooperativasPage)
+    loadComponent: () => import('./view/cooperativas.page').then(m => m.CooperativasPage)
   }
 ];
 

@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./personal/personal.page').then(m => m.PersonalPage)
+    loadComponent: () => import('./view/personal.page').then(m => m.PersonalPage)
   }
 ];
 

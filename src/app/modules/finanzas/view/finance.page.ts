@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { Chart, registerables } from 'chart.js';
+// 👇 IMPORTA MODEL Y SERVICE
+import { FinanzasService } from '../services/finanzas.service';
+import { ResumenFinanciero, DistribucionGastos } from '../model/finanzas.model';
 
 Chart.register(...registerables);
 
@@ -11,53 +14,49 @@ Chart.register(...registerables);
   templateUrl: './finance.page.html',
   styleUrls: ['./finance.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule
-  ]
+  imports: [CommonModule, FormsModule, IonicModule]
 })
 export class FinancePage implements OnInit, AfterViewInit {
 
   @ViewChild('pieChart', { static: false }) pieChart!: ElementRef;
 
-  // Datos quemados del resumen financiero
-  ingresos: number = 5250.00;
-  gastos: number = 3420.50;
-  ahorro: number = 12800.00;
-  inversiones: number = 8500.00;
-  balanceTotal: number = 23129.50;
+  // 👇 USA LAS INTERFACES
+  ingresos: number = 0;
+  gastos: number = 0;
+  ahorro: number = 0;
+  inversiones: number = 0;
+  balanceTotal: number = 0;
 
-  // Distribución de gastos
-  distribucionGastos = [
-    { categoria: 'Comida', porcentaje: 35, monto: 1197.18 },
-    { categoria: 'Transporte', porcentaje: 25, monto: 855.13 },
-    { categoria: 'Servicios', porcentaje: 20, monto: 684.10 },
-    { categoria: 'Entretenimiento', porcentaje: 12, monto: 410.46 },
-    { categoria: 'Otros', porcentaje: 8, monto: 273.64 }
-  ];
-
-  // Colores para el gráfico
+  distribucionGastos: DistribucionGastos[] = [];
   colores = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444'];
-
   fechaActual: string = '';
   private chart: any;
 
-  constructor() { 
+  // 👇 INYECTA EL SERVICE
+  constructor(private finanzasService: FinanzasService) { 
     this.establecerFecha();
   }
 
   ngOnInit() {
-    // Puedes agregar lógica adicional aquí si necesitas
+    this.cargarDatos();
   }
 
   ngAfterViewInit() {
     setTimeout(() => this.crearGraficoPastel(), 100);
   }
 
-  /**
-   * Establecer fecha actual formateada
-   */
+  // 👇 USA EL SERVICE PARA CARGAR DATOS
+  cargarDatos() {
+    const resumen = this.finanzasService.getResumenFinanciero();
+    this.ingresos = resumen.ingresos;
+    this.gastos = resumen.gastos;
+    this.ahorro = resumen.ahorro;
+    this.inversiones = resumen.inversiones;
+    this.balanceTotal = resumen.balanceTotal;
+
+    this.distribucionGastos = this.finanzasService.getDistribucionGastos();
+  }
+
   establecerFecha() {
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -65,14 +64,11 @@ export class FinancePage implements OnInit, AfterViewInit {
     this.fechaActual = `${meses[fecha.getMonth()]} ${fecha.getFullYear()}`;
   }
 
-  /**
-   * Crear gráfico de pastel con datos quemados
-   */
   crearGraficoPastel() {
     if (!this.pieChart) return;
-
+    
     const ctx = this.pieChart.nativeElement.getContext('2d');
-
+    
     if (this.chart) {
       this.chart.destroy();
     }
@@ -94,9 +90,7 @@ export class FinancePage implements OnInit, AfterViewInit {
         responsive: true,
         maintainAspectRatio: true,
         plugins: {
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
               label: (context) => {
@@ -109,5 +103,4 @@ export class FinancePage implements OnInit, AfterViewInit {
       }
     });
   }
-
 }

@@ -2,15 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-
-interface Empleado {
-  id: number;
-  nombre: string;
-  rol: string;
-  telefono?: string;
-  email?: string;
-  estado: string;
-}
+import { PersonalService } from '../services/personal.service';
+import { Empleado, FormularioEmpleado } from '../model/personal.model';
 
 @Component({
   selector: 'app-personal',
@@ -25,38 +18,13 @@ interface Empleado {
 })
 export class PersonalPage implements OnInit {
 
-  empleados: Empleado[] = [
-    {
-      id: 1,
-      nombre: 'Carlos Martínez',
-      rol: 'Capataz',
-      telefono: '310 456 7890',
-      email: 'carlos.martinez@email.com',
-      estado: 'Activo'
-    },
-    {
-      id: 2,
-      nombre: 'María González',
-      rol: 'Jornalero',
-      telefono: '315 678 9012',
-      estado: 'Activo'
-    },
-    {
-      id: 3,
-      nombre: 'Juan Rodríguez',
-      rol: 'Administrador',
-      telefono: '320 789 1234',
-      email: 'juan.rodriguez@email.com',
-      estado: 'Inactivo'
-    }
-  ];
-
+  empleados: Empleado[] = [];
   empleadosFiltrados: Empleado[] = [];
   terminoBusqueda: string = '';
   mostrarModal: boolean = false;
   empleadoEditar: Empleado | null = null;
 
-  formulario = {
+  formulario: FormularioEmpleado = {
     nombre: '',
     rol: '',
     telefono: '',
@@ -64,18 +32,23 @@ export class PersonalPage implements OnInit {
     estado: 'Activo'
   };
 
-  constructor() { }
+  constructor(private personalService: PersonalService) { }
 
   ngOnInit() {
-    this.empleadosFiltrados = [...this.empleados];
+    this.cargarEmpleados();
   }
 
   get empleadosActivos(): number {
-    return this.empleados.filter(e => e.estado === 'Activo').length;
+    return this.personalService.contarActivos();
   }
 
   get empleadosInactivos(): number {
-    return this.empleados.filter(e => e.estado === 'Inactivo').length;
+    return this.personalService.contarInactivos();
+  }
+
+  cargarEmpleados() {
+    this.empleados = this.personalService.getEmpleados();
+    this.empleadosFiltrados = [...this.empleados];
   }
 
   abrirModalRegistro() {
@@ -112,35 +85,28 @@ export class PersonalPage implements OnInit {
     }
 
     // Validar email si existe
-    if (this.formulario.email && !this.validarEmail(this.formulario.email)) {
+    if (this.formulario.email && !this.personalService.validarEmail(this.formulario.email)) {
       alert('Por favor ingresa un email válido');
       return;
     }
 
     if (this.empleadoEditar) {
       // Editar empleado existente
-      const index = this.empleados.findIndex(e => e.id === this.empleadoEditar!.id);
-      this.empleados[index] = {
-        ...this.empleados[index],
-        nombre: this.formulario.nombre,
-        rol: this.formulario.rol,
-        telefono: this.formulario.telefono,
-        email: this.formulario.email,
-        estado: this.formulario.estado
-      };
+      const resultado = this.personalService.actualizarEmpleado(
+        this.empleadoEditar.id, 
+        this.formulario
+      );
+      
+      if (resultado) {
+        alert('Empleado actualizado exitosamente');
+      }
     } else {
       // Agregar nuevo empleado
-      const nuevoEmpleado: Empleado = {
-        id: Date.now(),
-        nombre: this.formulario.nombre,
-        rol: this.formulario.rol,
-        telefono: this.formulario.telefono || undefined,
-        email: this.formulario.email || undefined,
-        estado: this.formulario.estado
-      };
-      this.empleados.unshift(nuevoEmpleado);
+      this.personalService.crearEmpleado(this.formulario);
+      alert('Empleado creado exitosamente');
     }
 
+    this.cargarEmpleados();
     this.filtrarEmpleados();
     this.cerrarModal();
   }
@@ -159,21 +125,20 @@ export class PersonalPage implements OnInit {
 
   eliminarEmpleado(id: number) {
     if (confirm('¿Estás seguro de eliminar este empleado?')) {
-      this.empleados = this.empleados.filter(e => e.id !== id);
-      this.filtrarEmpleados();
+      const eliminado = this.personalService.eliminarEmpleado(id);
+      
+      if (eliminado) {
+        alert('Empleado eliminado exitosamente');
+        this.cargarEmpleados();
+        this.filtrarEmpleados();
+      } else {
+        alert('Error al eliminar el empleado');
+      }
     }
   }
 
   filtrarEmpleados() {
-    const termino = this.terminoBusqueda.toLowerCase().trim();
-    if (!termino) {
-      this.empleadosFiltrados = [...this.empleados];
-    } else {
-      this.empleadosFiltrados = this.empleados.filter(e =>
-        e.nombre.toLowerCase().includes(termino) ||
-        e.rol.toLowerCase().includes(termino)
-      );
-    }
+    this.empleadosFiltrados = this.personalService.filtrarEmpleados(this.terminoBusqueda);
   }
 
   obtenerIniciales(nombre: string): string {
@@ -183,10 +148,4 @@ export class PersonalPage implements OnInit {
     }
     return nombre.substring(0, 2).toUpperCase();
   }
-
-  validarEmail(email: string): boolean {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  }
-
 }
