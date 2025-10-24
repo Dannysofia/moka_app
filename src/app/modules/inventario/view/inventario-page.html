@@ -1,0 +1,113 @@
+<ion-header>
+  <ion-toolbar color="success">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inicio" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Inventario</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="alternarFormulario()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Nuevo producto
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="cargarProductos($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Formulario de creación -->
+  <ion-card *ngIf="mostrarFormulario">
+    <ion-card-header>
+      <ion-card-title>Nuevo producto</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form (ngSubmit)="guardar()" #formRef="ngForm" novalidate>
+        <ion-item>
+          <ion-label position="stacked">Nombre *</ion-label>
+          <ion-input
+            [(ngModel)]="form.nombre"
+            name="nombre"
+            required
+            maxlength="80"
+            placeholder="Máx. 80 caracteres"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Descripción</ion-label>
+          <ion-textarea
+            [(ngModel)]="form.descripcion"
+            name="descripcion"
+            maxlength="250"
+            placeholder="Opcional, máx. 250 caracteres"
+            autoGrow="true"
+          ></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Categoría *</ion-label>
+          <ion-select [(ngModel)]="form.categoria" name="categoria" interface="popover">
+            <ion-select-option value="Insumos">Insumos</ion-select-option>
+            <ion-select-option value="Herramientas">Herramientas</ion-select-option>
+            <ion-select-option value="Empaques">Empaques</ion-select-option>
+            <ion-select-option value="Otro">Otro</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Cantidad *</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="form.cantidad"
+            name="cantidad"
+            min="0"
+            step="1"
+            inputmode="numeric"
+          ></ion-input>
+        </ion-item>
+
+        <div class="form-actions">
+          <ion-button color="medium" fill="outline" (click)="alternarFormulario()">Cancelar</ion-button>
+          <ion-button color="success" type="submit">Guardar</ion-button>
+        </div>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Estados de carga / error -->
+  <div *ngIf="cargando" class="estado centrado">
+    <ion-spinner name="dots"></ion-spinner>
+    <div>Cargando productos...</div>
+  </div>
+  <div *ngIf="!cargando && error" class="estado error">
+    {{ error }}
+  </div>
+  <div *ngIf="!cargando && !error && productos.length === 0" class="estado info">
+    Aún no tiene productos registrados
+  </div>
+
+  <!-- Tabla de productos -->
+  <div *ngIf="!cargando && !error && productos.length > 0" class="tabla">
+    <div class="thead">
+      <div>Nombre</div>
+      <div>Categoría</div>
+      <div>Descripción</div>
+      <div>Cantidad</div>
+      <div>Stock</div>
+    </div>
+    <div class="tbody">
+      <div class="row" *ngFor="let p of productos">
+        <div class="cell nombre">{{ p.nombre }}</div>
+        <div class="cell">{{ p.categoria }}</div>
+        <div class="cell descripcion">{{ p.descripcion || '-' }}</div>
+        <div class="cell cantidad">{{ p.cantidad }}</div>
+        <div class="cell">
+          <ion-badge [color]="getBadgeColor(p.cantidad)">{{ getEstado(p.cantidad) }}</ion-badge>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

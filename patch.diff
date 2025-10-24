@@ -1,0 +1,45 @@
+*** Begin Patch
+*** Update File: src/app/modules/finanzas/finance/finance.page.ts
+@@
+-import { Chart, registerables } from 'chart.js';
++import { Chart, registerables, type TooltipItem } from 'chart.js';
+@@
+-export class FinancePage implements OnInit, AfterViewInit {
+-
+-  @ViewChild('pieChart', { static: false }) pieChart!: ElementRef;
++export class FinancePage implements OnInit, AfterViewInit {
++
++  @ViewChild('pieChart', { static: false }) pieChart!: ElementRef<HTMLCanvasElement>;
+@@
+-  private chart: any;
++  private chart?: Chart<'pie'>;
+@@
+-  crearGraficoPastel() {
++  crearGraficoPastel() {
+     if (!this.pieChart) return;
+-
+-    const ctx = this.pieChart.nativeElement.getContext('2d');
++
++    const canvas = this.pieChart.nativeElement;
++    const ctx = canvas.getContext('2d');
+@@
+-    this.chart = new Chart(ctx, {
++    this.chart = new Chart(canvas, {
+       type: 'pie',
+       data: {
+@@
+-          tooltip: {
++          tooltip: {
+             callbacks: {
+-              label: (context) => {
++              label: (context: TooltipItem<'pie'>) => {
+                 const item = this.distribucionGastos[context.dataIndex];
+                 return ${context.label}: % ({item.monto.toFixed(2)});
+               }
+             }
+           }
+         }
+       }
+     });
+   }
+*** End Patch

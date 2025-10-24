@@ -8,8 +8,8 @@ export class SupabaseService {
   private readonly _client: SupabaseClient | null = this.enabled
     ? createClient(environment.supabase.url, environment.supabase.anonKey, {
         auth: {
-          persistSession: false,
-          autoRefreshToken: false,
+          persistSession: true,
+          autoRefreshToken: true,
         },
       })
     : null;
