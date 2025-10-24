@@ -23,7 +23,7 @@ export class TareasListPage implements OnInit {
   tareas: Tarea[] = [];
   loading = true;
   toastMsg = '';
-  toastColor: 'success'|'warning'|'danger' = 'success';
+  toastColor: 'success' | 'warning' | 'danger' = 'success';
   showToast = false;
 
   async ngOnInit() {
@@ -49,7 +49,8 @@ export class TareasListPage implements OnInit {
     this.loading = true;
     try {
       this.tareas = await this.srv.listarTareas(this.cultivoId);
-      if (!this.tareas.length) this.alert('Este cultivo aún no tiene tareas registradas', 'warning');
+      if (!this.tareas.length)
+        this.alert('Este cultivo aún no tiene tareas registradas', 'warning');
     } catch {
       this.alert('No fue posible cargar las tareas, inténtelo nuevamente', 'danger');
     } finally {
@@ -65,8 +66,12 @@ export class TareasListPage implements OnInit {
     }
   }
 
-  crear() { this.router.navigate(['/cultivos', this.cultivoId, 'tareas', 'nueva']); }
-  editar(t: Tarea) { this.router.navigate(['/cultivos', this.cultivoId, 'tareas', t.id, 'editar']); }
+  crear() {
+    this.router.navigate(['/cultivos', this.cultivoId, 'tareas', 'nueva']);
+  }
+  editar(t: Tarea) {
+    this.router.navigate(['/cultivos', this.cultivoId, 'tareas', t.id, 'editar']);
+  }
 
   async eliminar(t: Tarea) {
     const alert = await this.alertCtrl.create({
@@ -74,21 +79,32 @@ export class TareasListPage implements OnInit {
       message: '¿Desea eliminar esta tarea?',
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
-        { text: 'Eliminar', role: 'destructive', handler: async () => {
-          try {
-            await this.srv.eliminarTarea(this.cultivoId, t.id);
-            this.alert('La tarea fue eliminada exitosamente', 'success');
-            this.cargar();
-          } catch (e: any) {
-            this.alert(e?.message || 'No se pudo eliminar la tarea, inténtelo nuevamente', 'danger');
-          }
-        }}
-      ]
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async () => {
+            try {
+              await this.srv.eliminarTarea(this.cultivoId, t.id);
+              this.alert('La tarea fue eliminada exitosamente', 'success');
+              this.cargar();
+            } catch (e: any) {
+              this.alert(
+                e?.message || 'No se pudo eliminar la tarea, inténtelo nuevamente',
+                'danger'
+              );
+            }
+          },
+        },
+      ],
     });
     await alert.present();
   }
 
-  private alert(msg: string, color: 'success'|'warning'|'danger') { this.toastMsg = msg; this.toastColor = color; this.showToast = true; }
+  private alert(msg: string, color: 'success' | 'warning' | 'danger') {
+    this.toastMsg = msg;
+    this.toastColor = color;
+    this.showToast = true;
+  }
 
   statusClass(estado: string | undefined): string {
     const e = (estado || '').toString().toLowerCase();

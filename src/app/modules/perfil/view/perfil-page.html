@@ -1,0 +1,72 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Perfil</ion-title>
+    <!--<ion-buttons slot="start">
+      <ion-back-button defaultHref="/inicio" text=""></ion-back-button>
+    </ion-buttons>-->
+    <ion-buttons slot="end">
+      <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="register-content">
+  <div class="auth-card">
+    <h1 class="welcome">Mi perfil</h1>
+    <div class="subtitle">Gestiona tu información personal.</div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <label class="field-label">Nombre</label>
+      <ion-item lines="none" class="field">
+        <ion-input type="text" formControlName="nombre" placeholder="Ingresa tu nombre"></ion-input>
+      </ion-item>
+      @if (form.get('nombre')?.touched && form.get('nombre')?.invalid) {
+      <ion-note class="error">El nombre es obligatorio.</ion-note>
+      }
+
+      <label class="field-label">Apellidos</label>
+      <ion-item lines="none" class="field">
+        <ion-input
+          type="text"
+          formControlName="apellido"
+          placeholder="Ingresa tus apellidos"
+        ></ion-input>
+      </ion-item>
+      @if (form.get('apellido')?.touched && form.get('apellido')?.invalid) {
+      <ion-note class="error">El apellido es obligatorio.</ion-note>
+      }
+
+      <label class="field-label">Teléfono</label>
+      <ion-item lines="none" class="field">
+        <ion-input
+          type="tel"
+          formControlName="telefono"
+          placeholder="Ingresa tu teléfono"
+        ></ion-input>
+      </ion-item>
+      @if (form.get('telefono')?.touched && form.get('telefono')?.invalid) {
+      <ion-note
+        class="error"
+        >{{ form.get('telefono')?.errors?.['required'] ? 'El teléfono es obligatorio.' : 'Debe tener 10 dígitos numéricos.' }}</ion-note
+      >
+      }
+
+      <label class="field-label">Correo electrónico</label>
+      <ion-item lines="none" class="field">
+        <ion-input
+          type="email"
+          formControlName="correo"
+          placeholder="Tu correo"
+          [readonly]="true"
+          [disabled]="true"
+        ></ion-input>
+      </ion-item>
+
+      <ion-button expand="block" type="submit" [disabled]="loading">Guardar cambios</ion-button>
+      <ion-note *ngIf="errorMsg" color="danger">{{ errorMsg }}</ion-note>
+      <ion-note *ngIf="successMsg" color="success">{{ successMsg }}</ion-note>
+    </form>
+  </div>
+</ion-content>

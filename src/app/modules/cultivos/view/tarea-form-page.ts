@@ -49,7 +49,7 @@ export class TareaFormPage implements OnInit {
         this.srv.listarEstadosTarea(),
       ]);
     } catch (e: any) {
-      this.alert('No fue posible cargar cat�logos de tareas', 'danger');
+      this.alert('No fue posible cargar catálogos de tareas', 'danger');
     }
     if (this.tareaId) {
       this.title = 'Editar tarea';

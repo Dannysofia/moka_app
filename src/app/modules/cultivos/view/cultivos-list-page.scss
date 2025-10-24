@@ -12,6 +12,10 @@ ion-searchbar {
   --placeholder-color: #6b7280;
 }
 
+ion-menu-button {
+  --color: var(--ion-menu-button);
+}
+
 .cultivo-card {
   margin: 12px;
   border-radius: 16px;

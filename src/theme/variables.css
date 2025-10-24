@@ -12,4 +12,5 @@
 :root {
   --ion-primary: #159a09;
   --ion-secundary: #717070;
+  --ion-menu-button:var(--ion-primary)
 }
