@@ -17,6 +17,7 @@ ion-content {
   padding: 16px;
   max-width: 800px;
   margin: 0 auto;
+  padding-bottom: 80px; // Espacio para el FAB
 }
 
 // Finance card más delgado
@@ -154,5 +155,105 @@ ion-content {
       color: $color-text-secondary;
       font-weight: 500;
     }
+  }
+}
+
+// Expenses card (nueva sección)
+.expenses-card {
+  background: #fffef9;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f5f5f0;
+  margin-top: 16px;
+
+  ion-card-header {
+    padding: 16px 16px 8px 16px;
+  }
+
+  ion-card-subtitle {
+    font-size: 18px;
+    color: $color-text-primary;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  ion-card-content {
+    padding: 12px 16px 16px 16px;
+  }
+}
+
+.expenses-list {
+  .expense-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid $color-border;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .expense-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .expense-category {
+        font-size: 15px;
+        font-weight: 600;
+        color: $color-text-primary;
+      }
+
+      .expense-description {
+        font-size: 13px;
+        color: $color-text-secondary;
+      }
+    }
+
+    .expense-amount {
+      font-size: 16px;
+      font-weight: 600;
+      color: $color-negative;
+    }
+  }
+}
+
+.no-data {
+  text-align: center;
+  color: $color-text-secondary;
+  font-size: 14px;
+  padding: 20px 0;
+}
+
+// Modal styles
+ion-modal {
+  ion-content {
+    --background: #ffffff;
+  }
+
+  ion-item {
+    --background: transparent;
+    --border-color: $color-border;
+    margin-bottom: 16px;
+
+    ion-label {
+      font-weight: 500;
+      color: $color-text-primary;
+      margin-bottom: 8px;
+    }
+
+    ion-input,
+    ion-select {
+      --padding-start: 12px;
+      border: 1px solid $color-border;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+  }
+
+  ion-button[type="submit"] {
+    margin-top: 24px;
+    font-weight: 600;
   }
 }

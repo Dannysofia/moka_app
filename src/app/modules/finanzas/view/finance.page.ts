@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { Chart, registerables } from 'chart.js';
-// 👇 IMPORTA MODEL Y SERVICE
 import { FinanzasService } from '../services/finanzas.service';
-import { ResumenFinanciero, DistribucionGastos } from '../model/finanzas.model';
+import { ResumenFinanciero, DistribucionGastos, Gasto } from '../model/finanzas.model';
 
 Chart.register(...registerables);
 
@@ -20,7 +19,6 @@ export class FinancePage implements OnInit, AfterViewInit {
 
   @ViewChild('pieChart', { static: false }) pieChart!: ElementRef;
 
-  // 👇 USA LAS INTERFACES
   ingresos: number = 0;
   gastos: number = 0;
   ahorro: number = 0;
@@ -28,11 +26,19 @@ export class FinancePage implements OnInit, AfterViewInit {
   balanceTotal: number = 0;
 
   distribucionGastos: DistribucionGastos[] = [];
+  listaGastos: Gasto[] = [];
   colores = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444'];
   fechaActual: string = '';
   private chart: any;
 
-  // 👇 INYECTA EL SERVICE
+  // Control del modal
+  mostrarModal: boolean = false;
+  nuevoGasto: Gasto = {
+    categoria: '',
+    descripcion: '',
+    monto: 0
+  };
+
   constructor(private finanzasService: FinanzasService) { 
     this.establecerFecha();
   }
@@ -45,7 +51,6 @@ export class FinancePage implements OnInit, AfterViewInit {
     setTimeout(() => this.crearGraficoPastel(), 100);
   }
 
-  // 👇 USA EL SERVICE PARA CARGAR DATOS
   cargarDatos() {
     const resumen = this.finanzasService.getResumenFinanciero();
     this.ingresos = resumen.ingresos;
@@ -55,6 +60,7 @@ export class FinancePage implements OnInit, AfterViewInit {
     this.balanceTotal = resumen.balanceTotal;
 
     this.distribucionGastos = this.finanzasService.getDistribucionGastos();
+    this.listaGastos = this.finanzasService.getListaGastos();
   }
 
   establecerFecha() {
@@ -62,6 +68,40 @@ export class FinancePage implements OnInit, AfterViewInit {
                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     const fecha = new Date();
     this.fechaActual = `${meses[fecha.getMonth()]} ${fecha.getFullYear()}`;
+  }
+
+  abrirFormularioGasto() {
+    this.mostrarModal = true;
+  }
+
+  cerrarModal() {
+    this.mostrarModal = false;
+    this.resetearFormulario();
+  }
+
+  agregarGasto() {
+    if (this.nuevoGasto.categoria && this.nuevoGasto.descripcion && this.nuevoGasto.monto > 0) {
+      
+      // Agregar el gasto al servicio
+      this.finanzasService.agregarGasto(this.nuevoGasto);
+      
+      // Recargar todos los datos
+      this.cargarDatos();
+      
+      // Actualizar el gráfico
+      this.crearGraficoPastel();
+      
+      // Cerrar modal y resetear
+      this.cerrarModal();
+    }
+  }
+
+  resetearFormulario() {
+    this.nuevoGasto = {
+      categoria: '',
+      descripcion: '',
+      monto: 0
+    };
   }
 
   crearGraficoPastel() {

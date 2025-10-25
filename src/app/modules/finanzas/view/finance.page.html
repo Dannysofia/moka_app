@@ -73,5 +73,103 @@
       </ion-card-content>
     </ion-card>
 
+    <!-- Lista de Gastos Recientes -->
+    <ion-card class="expenses-card">
+      <ion-card-header>
+        <ion-card-subtitle>Gastos Recientes</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="expenses-list" *ngIf="listaGastos.length > 0; else noGastos">
+          <div class="expense-item" *ngFor="let gasto of listaGastos">
+            <div class="expense-info">
+              <span class="expense-category">{{ gasto.categoria }}</span>
+              <span class="expense-description">{{ gasto.descripcion }}</span>
+            </div>
+            <span class="expense-amount">-{{ gasto.monto | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+        <ng-template #noGastos>
+          <p class="no-data">No hay gastos registrados</p>
+        </ng-template>
+      </ion-card-content>
+    </ion-card>
+
   </div>
+
+  <!-- Botón FAB para agregar gasto -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="success" (click)="abrirFormularioGasto()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
 </ion-content>
+
+<!-- Modal para agregar gasto -->
+<ion-modal [isOpen]="mostrarModal" (didDismiss)="cerrarModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar color="success">
+        <ion-title>Agregar Gasto</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form (ngSubmit)="agregarGasto()">
+        
+        <ion-item>
+          <ion-label position="stacked">Categoría *</ion-label>
+          <ion-select [(ngModel)]="nuevoGasto.categoria" name="categoria" placeholder="Selecciona" required>
+            <ion-select-option value="Alimentación">Alimentación</ion-select-option>
+            <ion-select-option value="Transporte">Transporte</ion-select-option>
+            <ion-select-option value="Servicios">Servicios</ion-select-option>
+            <ion-select-option value="Entretenimiento">Entretenimiento</ion-select-option>
+            <ion-select-option value="Salud">Salud</ion-select-option>
+            <ion-select-option value="Educación">Educación</ion-select-option>
+            <ion-select-option value="Otros">Otros</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Descripción *</ion-label>
+          <ion-input 
+            [(ngModel)]="nuevoGasto.descripcion" 
+            name="descripcion" 
+            type="text" 
+            placeholder="Ej: Supermercado" 
+            required>
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Monto ($) *</ion-label>
+          <ion-input 
+            [(ngModel)]="nuevoGasto.monto" 
+            name="monto" 
+            type="number" 
+            placeholder="0.00" 
+            min="0.01" 
+            step="0.01"
+            required>
+          </ion-input>
+        </ion-item>
+
+        <ion-button 
+          expand="block" 
+          type="submit" 
+          color="success" 
+          class="ion-margin-top"
+          [disabled]="!nuevoGasto.categoria || !nuevoGasto.descripcion || !nuevoGasto.monto">
+          <ion-icon name="checkmark" slot="start"></ion-icon>
+          Guardar Gasto
+        </ion-button>
+
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>
