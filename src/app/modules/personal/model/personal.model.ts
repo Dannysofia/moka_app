@@ -1,28 +1,80 @@
+// Interfaz que coincide con la tabla de Supabase
+export interface EmpleadoDB {
+  id: string; // uuid
+  usuario_id: string; // uuid
+  nombres: string;
+  apellidos: string;
+  documento: string | null;
+  telefono: string | null;
+  rol: string | null;
+  fecha_ingreso: string | null; // date
+  salario: number | null; // numeric
+  estado: string; // USER-DEFINED (estado_generico)
+  direccion: string | null;
+  created_at: string; // timestamptz
+}
+
+// Interfaz de la aplicación
 export interface Empleado {
-  id: number;
-  nombre: string;
-  rol: string;
+  id: string;
+  usuario_id: string;
+  nombres: string;
+  apellidos: string;
+  nombreCompleto: string; // Helper para mostrar nombre completo
+  documento?: string;
   telefono?: string;
-  email?: string;
+  rol?: string;
+  fecha_ingreso?: Date;
+  salario?: number;
   estado: string;
+  direccion?: string;
+  created_at?: Date;
 }
 
 export interface FormularioEmpleado {
-  nombre: string;
-  rol: string;
+  nombres: string;
+  apellidos: string;
+  documento: string;
   telefono: string;
-  email: string;
+  rol: string;
+  fecha_ingreso: string;
+  salario: string;
   estado: string;
+  direccion: string;
 }
 
 export enum RolEmpleado {
   JORNALERO = 'Jornalero',
   CAPATAZ = 'Capataz',
   ADMINISTRADOR = 'Administrador',
+  TECNICO = 'Técnico',
   OTRO = 'Otro'
 }
 
 export enum EstadoEmpleado {
-  ACTIVO = 'Activo',
-  INACTIVO = 'Inactivo'
+  ACTIVO = 'activo',
+  INACTIVO = 'inactivo',
+  VACACIONES = 'vacaciones',
+  SUSPENDIDO = 'suspendido'
+}
+
+/**
+ * Mapear de BD a modelo de aplicación
+ */
+export function mapEmpleadoDBToApp(db: EmpleadoDB): Empleado {
+  return {
+    id: db.id,
+    usuario_id: db.usuario_id,
+    nombres: db.nombres,
+    apellidos: db.apellidos,
+    nombreCompleto: `${db.nombres} ${db.apellidos}`,
+    documento: db.documento || undefined,
+    telefono: db.telefono || undefined,
+    rol: db.rol || undefined,
+    fecha_ingreso: db.fecha_ingreso ? new Date(db.fecha_ingreso) : undefined,
+    salario: db.salario || undefined,
+    estado: db.estado,
+    direccion: db.direccion || undefined,
+    created_at: db.created_at ? new Date(db.created_at) : undefined
+  };
 }
