@@ -34,7 +34,7 @@ export class CooperativasPage implements OnInit {
   }
 
   /**
-   * Cargar cooperativas desde el servicio
+   * Cargar cooperativas desde Supabase
    */
   async cargarCooperativas() {
     this.cargando = true;
@@ -42,12 +42,13 @@ export class CooperativasPage implements OnInit {
     this.mensajeError = '';
 
     try {
-      this.cooperativas = await this.cooperativasService.getCooperativas();
+      // Cargar solo cooperativas activas desde Supabase
+      this.cooperativas = await this.cooperativasService.getCooperativasActivas();
       this.cooperativasFiltradas = [...this.cooperativas];
       this.cargando = false;
     } catch (err: any) {
       this.error = true;
-      this.mensajeError = 'No fue posible cargar las cooperativas, inténtelo nuevamente';
+      this.mensajeError = err.message || 'No fue posible cargar las cooperativas, inténtelo nuevamente';
       this.cargando = false;
       console.error('Error al cargar cooperativas:', err);
     }
@@ -61,7 +62,7 @@ export class CooperativasPage implements OnInit {
   }
 
   /**
-   * Filtrar cooperativas por búsqueda
+   * Filtrar cooperativas por búsqueda (local)
    */
   filtrarCooperativas() {
     this.cooperativasFiltradas = this.cooperativasService.filtrarCooperativas(
@@ -74,23 +75,29 @@ export class CooperativasPage implements OnInit {
    * Ver detalles de una cooperativa
    */
   verDetalles(cooperativa: Cooperativa) {
-    const servicios = cooperativa.servicios.join('\n• ');
-    const contacto = [];
+    let info = `📍 Ubicación: ${cooperativa.ubicacion || 'No disponible'}\n\n`;
     
-    if (cooperativa.telefono) contacto.push(`Teléfono: ${cooperativa.telefono}`);
-    if (cooperativa.email) contacto.push(`Email: ${cooperativa.email}`);
-    if (cooperativa.sitioWeb) contacto.push(`Web: ${cooperativa.sitioWeb}`);
+    if (cooperativa.resumen) {
+      info += `📄 Resumen:\n${cooperativa.resumen}\n\n`;
+    }
     
-    const info = `
-📍 Ubicación: ${cooperativa.ubicacion}
-
-📞 Contacto:
-${contacto.join('\n')}
-
-📋 Servicios:
-• ${servicios}
-    `.trim();
+    if (cooperativa.telefono) {
+      info += `📞 Teléfono: ${cooperativa.telefono}\n`;
+    }
     
-    alert(`${cooperativa.nombre}\n\n${info}`);
+    if (cooperativa.email) {
+      info += `✉️ Email: ${cooperativa.email}\n`;
+    }
+    
+    if (cooperativa.sitioWeb) {
+      info += `🌐 Web: ${cooperativa.sitioWeb}\n`;
+    }
+    
+    if (cooperativa.servicios && cooperativa.servicios.length > 0) {
+      const servicios = cooperativa.servicios.join('\n• ');
+      info += `\n📋 Servicios:\n• ${servicios}`;
+    }
+    
+    alert(`${cooperativa.nombre}\n\n${info.trim()}`);
   }
 }
