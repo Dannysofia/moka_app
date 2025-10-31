@@ -11,3 +11,10 @@ export interface DistribucionGastos {
   porcentaje: number;
   monto: number;
 }
+
+export interface Gasto {
+  categoria: string;
+  descripcion: string;
+  monto: number;
+  fecha?: Date;
+}

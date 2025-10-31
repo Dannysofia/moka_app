@@ -3,6 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import type { DatetimeChangeEventDetail } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { PerfilService } from '../../perfil/services/perfil-services';
 import { InicioService } from '../services/inicio-services';
 import { Bienvenida, Indicador, Cooperativa, CalendarioAg, TipoIndicador } from '../model/inicio-model';
 
@@ -37,7 +38,7 @@ export class InicioPage implements OnInit {
   cooperativas: Cooperativa[] = [];
   indicadoresVm: IndicadorVm[] = [];
 
-  saludoPrincipal = 'Bienvenido a Moka App';
+  saludoPrincipal = '¡Bienvenid@ a Moka App!';
   saludoSecundario: string | null = null;
 
   private selectedDate = new Date();
@@ -48,6 +49,7 @@ export class InicioPage implements OnInit {
   showToast = false;
 
   private srv = inject(InicioService);
+  private perfilSrv = inject(PerfilService);
   private router = inject(Router);
 
   // Modal de calendario
@@ -78,6 +80,8 @@ export class InicioPage implements OnInit {
   };
 
   async ngOnInit() {
+    // Cargar datos del usuario para personalizar el saludo principal
+    this.cargarUsuario();
     this.cargarBienvenida();
     this.cargarCalendario();
     this.cargarIndicadores();
@@ -168,7 +172,6 @@ export class InicioPage implements OnInit {
 
   private updateSaludo() {
     const texto = this.bienvenida?.texto?.trim();
-    this.saludoPrincipal = 'Bienvenido a Moka App';
 
     if (!texto) {
       this.saludoSecundario = null;
@@ -185,6 +188,22 @@ export class InicioPage implements OnInit {
 
     const principal = partes[0] || texto;
     this.saludoSecundario = principal !== this.saludoPrincipal ? principal : null;
+  }
+
+  private async cargarUsuario() {
+    try {
+      const norm = await this.perfilSrv.getCurrentUserNormalized();
+      const nombre = (norm?.nombre ?? '').trim();
+      if (nombre) {
+        const nombreCap = nombre.charAt(0).toUpperCase() + nombre.slice(1).toLowerCase();
+        // Sin dato de género en el perfil, usamos un saludo inclusivo por defecto
+        this.saludoPrincipal = `¡Bienvenido/a, ${nombreCap}!`;
+      } else {
+        this.saludoPrincipal = '¡Bienvenid@ a Moka App!';
+      }
+    } catch {
+      this.saludoPrincipal = '¡Bienvenid@ a Moka App!';
+    }
   }
 
   private toIndicadorVm(ind: Indicador): IndicadorVm {

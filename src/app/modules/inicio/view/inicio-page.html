@@ -13,11 +13,13 @@
 <ion-content [fullscreen]="true">
   <div class="page">
     <section class="welcome-section">
-      <h2 class="welcome-title">¡Bienvenid@ a Moka App!</h2>
+      <h2 class="welcome-title">{{ saludoPrincipal }}</h2>
       <ng-container *ngIf="!loading.bienvenida; else skBienvenida">
         <p class="welcome-caption" *ngIf="saludoSecundario">{{ saludoSecundario }}</p>
       </ng-container>
     </section>
+
+    
     <ng-template #skBienvenida>
       <ion-skeleton-text animated style="width: 60%; height: 20px"></ion-skeleton-text>
     </ng-template>
@@ -84,6 +86,9 @@
         </div>
       </ng-template>
     </section>
+    <div class="frase-section">
+      <p class="frase">"En cada taza hay sudor, esperanza y orgullo."</p>
+    </div>
   </div>
 
   <ion-toast

@@ -14,7 +14,7 @@
   <ion-toolbar class="date-toolbar">
     <div class="date-container">
       <ion-icon name="people-outline"></ion-icon>
-      <span>{{ empleados.length }} Empleados Registrados</span>
+      <span>{{ totalEmpleados }} Empleados Registrados</span>
     </div>
   </ion-toolbar>
 </ion-header>
@@ -22,99 +22,125 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="content-wrapper">
     
-    <!-- Tarjetas de resumen -->
-    <div class="summary-cards">
-      <ion-card class="summary-card">
-        <ion-card-content>
-          <div class="summary-icon">
-            <ion-icon name="people"></ion-icon>
-          </div>
-          <div class="summary-info">
-            <div class="summary-number">{{ empleados.length }}</div>
-            <div class="summary-label">Total</div>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="summary-card active">
-        <ion-card-content>
-          <div class="summary-icon active">
-            <ion-icon name="checkmark-circle"></ion-icon>
-          </div>
-          <div class="summary-info">
-            <div class="summary-number">{{ empleadosActivos }}</div>
-            <div class="summary-label">Activos</div>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="summary-card inactive">
-        <ion-card-content>
-          <div class="summary-icon inactive">
-            <ion-icon name="close-circle"></ion-icon>
-          </div>
-          <div class="summary-info">
-            <div class="summary-number">{{ empleadosInactivos }}</div>
-            <div class="summary-label">Inactivos</div>
-          </div>
-        </ion-card-content>
-      </ion-card>
+    <!-- Loading spinner -->
+    <div *ngIf="cargando" style="text-align: center; padding: 40px;">
+      <ion-spinner color="success"></ion-spinner>
+      <p style="margin-top: 16px; color: #6b7280;">Cargando empleados...</p>
     </div>
 
-    <!-- Buscador -->
-    <ion-searchbar 
-      placeholder="Buscar empleado..." 
-      [(ngModel)]="terminoBusqueda"
-      (ionInput)="filtrarEmpleados()"
-      class="custom-searchbar">
-    </ion-searchbar>
+    <!-- Error message -->
+    <ion-card *ngIf="error && !cargando" color="danger">
+      <ion-card-content>
+        <p style="margin: 0;">{{ mensajeError }}</p>
+        <ion-button size="small" fill="clear" (click)="recargar()" style="margin-top: 8px;">
+          Reintentar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
 
-    <!-- Lista de empleados -->
-    <div class="empleados-list">
-      <ion-card class="empleado-card" *ngFor="let empleado of empleadosFiltrados">
-        <ion-card-content>
-          <div class="empleado-header">
-            <div class="empleado-avatar">
-              <span>{{ obtenerIniciales(empleado.nombre) }}</span>
+    <div *ngIf="!cargando && !error">
+      <!-- Tarjetas de resumen -->
+      <div class="summary-cards">
+        <ion-card class="summary-card">
+          <ion-card-content>
+            <div class="summary-icon">
+              <ion-icon name="people"></ion-icon>
             </div>
-            <div class="empleado-info">
-              <h3>{{ empleado.nombre }}</h3>
-              <p class="cargo">{{ empleado.rol }}</p>
+            <div class="summary-info">
+              <div class="summary-number">{{ totalEmpleados }}</div>
+              <div class="summary-label">Total</div>
             </div>
-            <ion-badge [color]="empleado.estado === 'Activo' ? 'success' : 'medium'">
-              {{ empleado.estado }}
-            </ion-badge>
-          </div>
+          </ion-card-content>
+        </ion-card>
 
-          <div class="empleado-detalles">
-            <div class="detalle-item" *ngIf="empleado.telefono">
-              <ion-icon name="call-outline"></ion-icon>
-              <span>{{ empleado.telefono }}</span>
+        <ion-card class="summary-card active">
+          <ion-card-content>
+            <div class="summary-icon active">
+              <ion-icon name="checkmark-circle"></ion-icon>
             </div>
-            <div class="detalle-item" *ngIf="empleado.email">
-              <ion-icon name="mail-outline"></ion-icon>
-              <span>{{ empleado.email }}</span>
+            <div class="summary-info">
+              <div class="summary-number">{{ empleadosActivos }}</div>
+              <div class="summary-label">Activos</div>
             </div>
-          </div>
+          </ion-card-content>
+        </ion-card>
 
-          <div class="empleado-actions">
-            <ion-button fill="clear" size="small" (click)="editarEmpleado(empleado)">
-              <ion-icon slot="start" name="create-outline"></ion-icon>
-              Editar
-            </ion-button>
-            <ion-button fill="clear" size="small" color="danger" (click)="eliminarEmpleado(empleado.id)">
-              <ion-icon slot="start" name="trash-outline"></ion-icon>
-              Eliminar
-            </ion-button>
-          </div>
-        </ion-card-content>
-      </ion-card>
+        <ion-card class="summary-card inactive">
+          <ion-card-content>
+            <div class="summary-icon inactive">
+              <ion-icon name="close-circle"></ion-icon>
+            </div>
+            <div class="summary-info">
+              <div class="summary-number">{{ empleadosInactivos }}</div>
+              <div class="summary-label">Inactivos</div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
 
-      <!-- Mensaje cuando no hay empleados -->
-      <div class="empty-state" *ngIf="empleadosFiltrados.length === 0">
-        <ion-icon name="people-outline"></ion-icon>
-        <h3>No hay empleados registrados</h3>
-        <p>Agrega tu primer empleado usando el botón +</p>
+      <!-- Buscador -->
+      <ion-searchbar 
+        placeholder="Buscar empleado..." 
+        [(ngModel)]="terminoBusqueda"
+        (ionInput)="filtrarEmpleados()"
+        class="custom-searchbar">
+      </ion-searchbar>
+
+      <!-- Lista de empleados -->
+      <div class="empleados-list">
+        <ion-card class="empleado-card" *ngFor="let empleado of empleadosFiltrados">
+          <ion-card-content>
+            <div class="empleado-header">
+              <div class="empleado-avatar">
+                <span>{{ obtenerIniciales(empleado.nombreCompleto) }}</span>
+              </div>
+              <div class="empleado-info">
+                <h3>{{ empleado.nombreCompleto }}</h3>
+                <p class="cargo">{{ empleado.rol || 'Sin rol asignado' }}</p>
+              </div>
+              <ion-badge [color]="empleado.estado === 'activo' ? 'success' : 'medium'">
+                {{ empleado.estado }}
+              </ion-badge>
+            </div>
+
+            <div class="empleado-detalles" *ngIf="empleado.telefono || empleado.documento || empleado.salario">
+              <div class="detalle-item" *ngIf="empleado.telefono">
+                <ion-icon name="call-outline"></ion-icon>
+                <span>{{ empleado.telefono }}</span>
+              </div>
+              <div class="detalle-item" *ngIf="empleado.documento">
+                <ion-icon name="card-outline"></ion-icon>
+                <span>{{ empleado.documento }}</span>
+              </div>
+              <div class="detalle-item" *ngIf="empleado.salario">
+                <ion-icon name="cash-outline"></ion-icon>
+                <span>${{ empleado.salario | number:'1.0-0' }}</span>
+              </div>
+              <div class="detalle-item" *ngIf="empleado.fecha_ingreso">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>Ingreso: {{ empleado.fecha_ingreso | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+
+            <div class="empleado-actions">
+              <ion-button fill="clear" size="small" (click)="editarEmpleado(empleado)">
+                <ion-icon slot="start" name="create-outline"></ion-icon>
+                Editar
+              </ion-button>
+              <ion-button fill="clear" size="small" color="danger" (click)="eliminarEmpleado(empleado.id)">
+                <ion-icon slot="start" name="trash-outline"></ion-icon>
+                Eliminar
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Mensaje cuando no hay empleados -->
+        <div class="empty-state" *ngIf="empleadosFiltrados.length === 0 && !cargando">
+          <ion-icon name="people-outline"></ion-icon>
+          <h3>No hay empleados registrados</h3>
+          <p>Agrega tu primer empleado usando el botón +</p>
+        </div>
       </div>
     </div>
 
@@ -138,22 +164,43 @@
     <ion-content class="ion-padding">
       <form>
         <ion-item>
-          <ion-label position="stacked">Nombre *</ion-label>
+          <ion-label position="stacked">Nombres *</ion-label>
           <ion-input 
-            [(ngModel)]="formulario.nombre" 
-            name="nombre" 
-            placeholder="Nombre del empleado"
+            [(ngModel)]="formulario.nombres" 
+            name="nombres" 
+            placeholder="Nombres del empleado"
             maxlength="80"
             counter="true">
           </ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label position="stacked">Rol *</ion-label>
+          <ion-label position="stacked">Apellidos *</ion-label>
+          <ion-input 
+            [(ngModel)]="formulario.apellidos" 
+            name="apellidos" 
+            placeholder="Apellidos del empleado"
+            maxlength="80"
+            counter="true">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Documento</ion-label>
+          <ion-input 
+            [(ngModel)]="formulario.documento" 
+            name="documento" 
+            placeholder="Número de documento">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Rol</ion-label>
           <ion-select [(ngModel)]="formulario.rol" name="rol" placeholder="Seleccionar rol">
             <ion-select-option value="Jornalero">Jornalero</ion-select-option>
             <ion-select-option value="Capataz">Capataz</ion-select-option>
             <ion-select-option value="Administrador">Administrador</ion-select-option>
+            <ion-select-option value="Técnico">Técnico</ion-select-option>
             <ion-select-option value="Otro">Otro</ion-select-option>
           </ion-select>
         </ion-item>
@@ -169,24 +216,49 @@
         </ion-item>
 
         <ion-item>
-          <ion-label position="stacked">Email</ion-label>
+          <ion-label position="stacked">Dirección</ion-label>
           <ion-input 
-            [(ngModel)]="formulario.email" 
-            name="email" 
-            type="email" 
-            placeholder="ejemplo@email.com">
+            [(ngModel)]="formulario.direccion" 
+            name="direccion" 
+            placeholder="Dirección del empleado">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Fecha de Ingreso</ion-label>
+          <ion-input 
+            [(ngModel)]="formulario.fecha_ingreso" 
+            name="fecha_ingreso" 
+            type="date">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Salario</ion-label>
+          <ion-input 
+            [(ngModel)]="formulario.salario" 
+            name="salario" 
+            type="number"
+            placeholder="0">
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label position="stacked">Estado *</ion-label>
           <ion-select [(ngModel)]="formulario.estado" name="estado" placeholder="Seleccionar estado">
-            <ion-select-option value="Activo">Activo</ion-select-option>
-            <ion-select-option value="Inactivo">Inactivo</ion-select-option>
+            <ion-select-option value="activo">Activo</ion-select-option>
+            <ion-select-option value="inactivo">Inactivo</ion-select-option>
+            <ion-select-option value="vacaciones">Vacaciones</ion-select-option>
+            <ion-select-option value="suspendido">Suspendido</ion-select-option>
           </ion-select>
         </ion-item>
 
+        <div style="margin-top: 16px; padding: 12px; background: #fef3c7; border-radius: 8px; font-size: 12px;">
+          <strong>Nota:</strong> Los campos marcados con * son obligatorios
+        </div>
+
         <ion-button expand="block" color="success" (click)="guardarEmpleado()" class="ion-margin-top">
+          <ion-icon slot="start" name="save-outline"></ion-icon>
           {{ empleadoEditar ? 'Actualizar' : 'Guardar' }} Empleado
         </ion-button>
       </form>

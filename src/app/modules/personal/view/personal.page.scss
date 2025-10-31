@@ -5,6 +5,28 @@ $color-text-primary: #1f2937;
 $color-text-secondary: #6b7280;
 $color-border: #e5e7eb;
 
+ion-modal {
+  --ion-text-color: #1f2937;
+  --ion-color-step-850: #1f2937;
+  
+  ion-item {
+    --color: #1f2937;
+    
+    ion-input,
+    ion-select,
+    ion-textarea {
+      color: #1f2937 !important;
+      
+      input,
+      textarea {
+        color: #1f2937 !important;
+        -webkit-text-fill-color: #1f2937 !important;
+      }
+    }
+  }
+}
+
+
 // Fuente
 * {
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
@@ -242,19 +264,51 @@ ion-content {
 }
 
 // Modal styles
+// Modal styles
 ion-modal {
+  --background: #ffffff;
+
+  ion-toolbar {
+    --background: $color-success;
+    --color: white;
+  }
+
+  ion-content {
+    --background: #fafaf9;
+  }
+
   ion-item {
     margin-bottom: 12px;
-    --background: #fffef9;
+    --background: #ffffff;
     --border-color: $color-border;
+    --highlight-background: $color-success;
 
     ion-label {
       font-weight: 500;
-      color: $color-text-primary;
+      color: $color-text-primary !important;
+      font-size: 14px;
+    }
+
+    ion-input {
+      --color: $color-text-primary;
+      --placeholder-color: $color-text-secondary;
+      
+      input {
+        color: #1f2937 !important;
+        -webkit-text-fill-color: #1f2937 !important;
+      }
+    }
+
+    ion-select {
+      --color: $color-text-primary;
+      --placeholder-color: $color-text-secondary;
+      color: #1f2937 !important;
     }
   }
 
   ion-button {
     margin-top: 20px;
+    font-weight: 600;
+    text-transform: none;
   }
 }

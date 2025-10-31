@@ -382,6 +382,20 @@ ion-toast {
   --border-radius: 12px;
 }
 
+/* Frase al final de la página */
+.frase-section {
+  align-items: center;
+  margin-top: 12px;
+}
+
+.frase {
+  margin: 0;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #374151;
+  font-style: italic;
+}
+
 
 
 

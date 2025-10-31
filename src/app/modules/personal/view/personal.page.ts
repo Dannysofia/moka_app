@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { PersonalService } from '../services/personal.service';
 import { Empleado, FormularioEmpleado } from '../model/personal.model';
 
@@ -24,31 +24,104 @@ export class PersonalPage implements OnInit {
   mostrarModal: boolean = false;
   empleadoEditar: Empleado | null = null;
 
+  // Estados de carga
+  cargando: boolean = false;
+  error: boolean = false;
+  mensajeError: string = '';
+
+  // Estadísticas
+  totalEmpleados: number = 0;
+  empleadosActivos: number = 0;
+  empleadosInactivos: number = 0;
+
   formulario: FormularioEmpleado = {
-    nombre: '',
-    rol: '',
+    nombres: '',
+    apellidos: '',
+    documento: '',
     telefono: '',
-    email: '',
-    estado: 'Activo'
+    rol: '',
+    fecha_ingreso: '',
+    salario: '',
+    estado: 'activo',
+    direccion: ''
   };
 
-  constructor(private personalService: PersonalService) { }
+  // Usuario temporal - Se genera un UUID para cada empleado
+  usuarioId: string = this.generarUUID();
+
+  constructor(
+    private personalService: PersonalService,
+    private alertController: AlertController,
+    private loadingController: LoadingController,
+    private toastController: ToastController
+  ) { }
 
   ngOnInit() {
     this.cargarEmpleados();
+    this.cargarEstadisticas();
   }
 
-  get empleadosActivos(): number {
-    return this.personalService.contarActivos();
+  /**
+   * Generar UUID temporal
+   */
+  generarUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   }
 
-  get empleadosInactivos(): number {
-    return this.personalService.contarInactivos();
+  /**
+   * Cargar empleados desde Supabase
+   */
+  async cargarEmpleados() {
+    this.cargando = true;
+    this.error = false;
+    this.mensajeError = '';
+
+    try {
+      this.empleados = await this.personalService.getEmpleados();
+      this.empleadosFiltrados = [...this.empleados];
+      this.cargando = false;
+      console.log('✅ Empleados cargados:', this.empleados.length);
+    } catch (err: any) {
+      this.error = true;
+      this.mensajeError = err.message || 'No fue posible cargar los empleados';
+      this.cargando = false;
+      console.error('❌ Error al cargar empleados:', err);
+      await this.mostrarToast('Error al cargar empleados', 'danger');
+    }
   }
 
-  cargarEmpleados() {
-    this.empleados = this.personalService.getEmpleados();
-    this.empleadosFiltrados = [...this.empleados];
+  /**
+   * Cargar estadísticas
+   */
+  async cargarEstadisticas() {
+    try {
+      const stats = await this.personalService.getEstadisticas();
+      this.totalEmpleados = stats.total;
+      this.empleadosActivos = stats.activos;
+      this.empleadosInactivos = stats.inactivos;
+      console.log('📊 Estadísticas:', stats);
+    } catch (err: any) {
+      console.error('❌ Error al cargar estadísticas:', err);
+    }
+  }
+
+  /**
+   * Recargar datos
+   */
+  async recargar() {
+    const loading = await this.loadingController.create({
+      message: 'Recargando...'
+    });
+    await loading.present();
+
+    await this.cargarEmpleados();
+    await this.cargarEstadisticas();
+    
+    await loading.dismiss();
   }
 
   abrirModalRegistro() {
@@ -64,88 +137,157 @@ export class PersonalPage implements OnInit {
 
   limpiarFormulario() {
     this.formulario = {
-      nombre: '',
-      rol: '',
+      nombres: '',
+      apellidos: '',
+      documento: '',
       telefono: '',
-      email: '',
-      estado: 'Activo'
+      rol: '',
+      fecha_ingreso: '',
+      salario: '',
+      estado: 'activo',
+      direccion: ''
     };
   }
 
-  guardarEmpleado() {
+  async guardarEmpleado() {
     // Validaciones
-    if (!this.formulario.nombre || !this.formulario.rol || !this.formulario.estado) {
-      alert('Por favor completa los campos obligatorios: Nombre, Rol y Estado');
-      return;
-    }
-
-    if (this.formulario.nombre.length > 80) {
-      alert('El nombre no puede exceder 80 caracteres');
-      return;
-    }
-
-    // Validar email si existe
-    if (this.formulario.email && !this.personalService.validarEmail(this.formulario.email)) {
-      alert('Por favor ingresa un email válido');
-      return;
-    }
-
-    if (this.empleadoEditar) {
-      // Editar empleado existente
-      const resultado = this.personalService.actualizarEmpleado(
-        this.empleadoEditar.id, 
-        this.formulario
+    if (!this.formulario.nombres || !this.formulario.apellidos) {
+      await this.mostrarAlerta(
+        'Campos obligatorios',
+        'Por favor completa los campos: Nombres y Apellidos'
       );
-      
-      if (resultado) {
-        alert('Empleado actualizado exitosamente');
-      }
-    } else {
-      // Agregar nuevo empleado
-      this.personalService.crearEmpleado(this.formulario);
-      alert('Empleado creado exitosamente');
+      return;
     }
 
-    this.cargarEmpleados();
-    this.filtrarEmpleados();
-    this.cerrarModal();
+    const loading = await this.loadingController.create({
+      message: this.empleadoEditar ? 'Actualizando...' : 'Guardando...'
+    });
+    await loading.present();
+
+    try {
+      if (this.empleadoEditar) {
+        // Editar empleado existente
+        await this.personalService.actualizarEmpleado(
+          this.empleadoEditar.id,
+          this.formulario
+        );
+        await this.mostrarToast('✅ Empleado actualizado exitosamente', 'success');
+      } else {
+        // Agregar nuevo empleado - Generar nuevo UUID para cada empleado
+        const nuevoUsuarioId = this.generarUUID();
+        await this.personalService.crearEmpleado(this.formulario, nuevoUsuarioId);
+        await this.mostrarToast('✅ Empleado creado exitosamente', 'success');
+      }
+
+      await loading.dismiss();
+      await this.cargarEmpleados();
+      await this.cargarEstadisticas();
+      this.filtrarEmpleados();
+      this.cerrarModal();
+    } catch (err: any) {
+      await loading.dismiss();
+      await this.mostrarAlerta(
+        'Error',
+        err.message || 'No se pudo guardar el empleado'
+      );
+      console.error('❌ Error al guardar empleado:', err);
+    }
   }
 
   editarEmpleado(empleado: Empleado) {
     this.empleadoEditar = empleado;
     this.formulario = {
-      nombre: empleado.nombre,
-      rol: empleado.rol,
+      nombres: empleado.nombres,
+      apellidos: empleado.apellidos,
+      documento: empleado.documento || '',
       telefono: empleado.telefono || '',
-      email: empleado.email || '',
-      estado: empleado.estado
+      rol: empleado.rol || '',
+      fecha_ingreso: empleado.fecha_ingreso 
+        ? empleado.fecha_ingreso.toISOString().split('T')[0] 
+        : '',
+      salario: empleado.salario ? empleado.salario.toString() : '',
+      estado: empleado.estado,
+      direccion: empleado.direccion || ''
     };
     this.mostrarModal = true;
   }
 
-  eliminarEmpleado(id: number) {
-    if (confirm('¿Estás seguro de eliminar este empleado?')) {
-      const eliminado = this.personalService.eliminarEmpleado(id);
-      
-      if (eliminado) {
-        alert('Empleado eliminado exitosamente');
-        this.cargarEmpleados();
-        this.filtrarEmpleados();
-      } else {
-        alert('Error al eliminar el empleado');
-      }
-    }
+  async eliminarEmpleado(id: string) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro de eliminar este empleado? Esta acción no se puede deshacer.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async () => {
+            const loading = await this.loadingController.create({
+              message: 'Eliminando...'
+            });
+            await loading.present();
+
+            try {
+              await this.personalService.eliminarEmpleado(id);
+              await loading.dismiss();
+              await this.mostrarToast('✅ Empleado eliminado exitosamente', 'success');
+              await this.cargarEmpleados();
+              await this.cargarEstadisticas();
+              this.filtrarEmpleados();
+            } catch (err: any) {
+              await loading.dismiss();
+              await this.mostrarAlerta('Error', err.message || 'No se pudo eliminar el empleado');
+              console.error('❌ Error al eliminar empleado:', err);
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   filtrarEmpleados() {
-    this.empleadosFiltrados = this.personalService.filtrarEmpleados(this.terminoBusqueda);
+    this.empleadosFiltrados = this.personalService.filtrarEmpleados(
+      this.empleados,
+      this.terminoBusqueda
+    );
   }
 
   obtenerIniciales(nombre: string): string {
+    if (!nombre) return '??';
     const palabras = nombre.split(' ');
     if (palabras.length >= 2) {
       return (palabras[0][0] + palabras[1][0]).toUpperCase();
     }
     return nombre.substring(0, 2).toUpperCase();
+  }
+
+  /**
+   * Mostrar alerta
+   */
+  async mostrarAlerta(titulo: string, mensaje: string) {
+    const alert = await this.alertController.create({
+      header: titulo,
+      message: mensaje,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
+  /**
+   * Mostrar toast
+   */
+  async mostrarToast(mensaje: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastController.create({
+      message: mensaje,
+      duration: 2000,
+      position: 'bottom',
+      color: color
+    });
+    await toast.present();
   }
 }
