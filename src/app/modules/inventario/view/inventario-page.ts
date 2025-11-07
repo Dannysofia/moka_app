@@ -22,6 +22,12 @@ export class InventarioPage implements OnInit {
   cargando = false;
   error = '';
   mostrarFormulario = false;
+  editando: Producto | null = null;
+  terminoBusqueda: string = '';
+  page = 1;
+  pageSize = 10;
+  total = 0;
+  hasMore = false;
 
   form: CrearProductoDto = {
     nombre: '',
@@ -44,12 +50,17 @@ export class InventarioPage implements OnInit {
   async cargarProductos(event?: any) {
     this.cargando = !event;
     this.error = '';
-    const res = await this.inv.listar();
+    const res = await this.inv.listarPaginado(this.page, this.pageSize, this.terminoBusqueda);
     if (res.ok) {
-      this.productos = res.data!;
+      const r = res.data!;
+      this.productos = r.items;
+      this.total = r.total;
+      this.hasMore = r.hasMore;
     } else {
       this.error = res.error || 'Error al consultar productos';
       this.productos = [];
+      this.total = 0;
+      this.hasMore = false;
     }
     this.cargando = false;
     if (event?.target?.complete) event.target.complete();
@@ -57,6 +68,26 @@ export class InventarioPage implements OnInit {
 
   alternarFormulario() {
     this.mostrarFormulario = !this.mostrarFormulario;
+    if (!this.mostrarFormulario) {
+      this.editando = null;
+    }
+  }
+
+  async buscar() {
+    this.page = 1;
+    await this.cargarProductos();
+  }
+
+  async siguiente() {
+    if (!this.hasMore) return;
+    this.page += 1;
+    await this.cargarProductos();
+  }
+
+  async anterior() {
+    if (this.page === 1) return;
+    this.page -= 1;
+    await this.cargarProductos();
   }
 
   limpiarFormulario() {
@@ -69,20 +100,29 @@ export class InventarioPage implements OnInit {
   }
 
   async guardar() {
-    const res = await this.inv.crear({
+    const payload: CrearProductoDto = {
       nombre: this.form.nombre?.trim(),
       descripcion: this.form.descripcion?.trim() || undefined,
       categoria: this.form.categoria,
       cantidad: Number(this.form.cantidad),
-    });
+    };
+
+    const res = this.editando
+      ? await this.inv.actualizar(this.editando.id, payload)
+      : await this.inv.crear(payload);
 
     if (!res.ok) {
-      await this.presentarToast(res.error || 'No se pudo guardar', 'danger');
+      await this.presentarToast(res.error || (this.editando ? 'No se pudo actualizar' : 'No se pudo guardar'), 'danger');
       return;
     }
 
-    await this.presentarToast('Producto guardado con éxito', 'success');
+    if (this.getEstado(this.form.cantidad) === 'Bajo') {
+      await this.presentarToast('Este producto está con stock bajo', 'warning');
+    }
+
+    await this.presentarToast(this.editando ? 'Cambios guardados correctamente' : 'Producto guardado con éxito', 'success');
     this.limpiarFormulario();
+    this.editando = null;
     this.mostrarFormulario = false;
     this.cargarProductos();
   }
@@ -98,8 +138,49 @@ export class InventarioPage implements OnInit {
     return 'danger';
   }
 
+  getCardClass(cantidad: number): string {
+    const s = estadoStock(cantidad);
+    if (s === 'Suficiente') return 'estado-suficiente';
+    if (s === 'Bajo') return 'estado-bajo';
+    return 'estado-agotado';
+  }
+
+  getEstadoIcon(cantidad: number): string {
+    const s = estadoStock(cantidad);
+    if (s === 'Suficiente') return 'checkmark-circle-outline';
+    if (s === 'Bajo') return 'alert-circle-outline';
+    return 'close-circle-outline';
+  }
+
   private async presentarToast(message: string, color: 'success' | 'warning' | 'danger') {
     const t = await this.toast.create({ message, color, duration: 2000, position: 'top' });
     await t.present();
+  }
+
+  editar(p: Producto) {
+    this.editando = p;
+    this.form = {
+      nombre: p.nombre,
+      descripcion: p.descripcion || '',
+      categoria: p.categoria,
+      cantidad: p.cantidad,
+    };
+    this.mostrarFormulario = true;
+  }
+
+  async eliminar(p: Producto) {
+    const ok = confirm('¿Desea eliminar este producto?');
+    if (!ok) return;
+    const res = await this.inv.eliminar(p.id);
+    if (!res.ok) {
+      await this.presentarToast(res.error || 'No se pudo eliminar el producto, inténtelo nuevamente', 'danger');
+      return;
+    }
+    await this.presentarToast('Producto eliminado con éxito', 'success');
+    // Si borramos el último de la página y no hay más, retrocedemos de página
+    if (this.productos.length === 1 && this.page > 1) {
+      this.page -= 1;
+    }
+    this.cargarProductos();
   }
 }

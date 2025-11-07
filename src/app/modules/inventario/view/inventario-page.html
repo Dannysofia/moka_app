@@ -1,14 +1,14 @@
 <ion-header>
-  <ion-toolbar color="success">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/inicio" text=""></ion-back-button>
-    </ion-buttons>
+  <ion-toolbar>
     <ion-title>Inventario</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="alternarFormulario()">
+      <ion-button (click)="alternarFormulario()" color="success">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-        Nuevo producto
+        Crear producto
       </ion-button>
+      <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-menu-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -18,10 +18,19 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
+  <!-- Búsqueda -->
+  <ion-searchbar
+    placeholder="Buscar productos"
+    [(ngModel)]="terminoBusqueda"
+    (ionChange)="buscar()"
+    showClearButton="focus"
+    debounce="200">
+  </ion-searchbar>
+
   <!-- Formulario de creación -->
   <ion-card *ngIf="mostrarFormulario">
     <ion-card-header>
-      <ion-card-title>Nuevo producto</ion-card-title>
+      <ion-card-title>{{ editando ? 'Editar producto' : 'Nuevo producto' }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <form (ngSubmit)="guardar()" #formRef="ngForm" novalidate>
@@ -67,6 +76,9 @@
             step="1"
             inputmode="numeric"
           ></ion-input>
+          <ion-note slot="helper">
+            Estado: {{ getEstado(form.cantidad) }}
+          </ion-note>
         </ion-item>
 
         <div class="form-actions">
@@ -85,29 +97,44 @@
   <div *ngIf="!cargando && error" class="estado error">
     {{ error }}
   </div>
-  <div *ngIf="!cargando && !error && productos.length === 0" class="estado info">
-    Aún no tiene productos registrados
+  <div *ngIf="!cargando && !error && productos.length === 0" class="empty">
+    Aún no tiene productos registrados, cree el primero para empezar
   </div>
 
-  <!-- Tabla de productos -->
-  <div *ngIf="!cargando && !error && productos.length > 0" class="tabla">
-    <div class="thead">
-      <div>Nombre</div>
-      <div>Categoría</div>
-      <div>Descripción</div>
-      <div>Cantidad</div>
-      <div>Stock</div>
-    </div>
-    <div class="tbody">
-      <div class="row" *ngFor="let p of productos">
-        <div class="cell nombre">{{ p.nombre }}</div>
-        <div class="cell">{{ p.categoria }}</div>
-        <div class="cell descripcion">{{ p.descripcion || '-' }}</div>
-        <div class="cell cantidad">{{ p.cantidad }}</div>
-        <div class="cell">
-          <ion-badge [color]="getBadgeColor(p.cantidad)">{{ getEstado(p.cantidad) }}</ion-badge>
+  <!-- Lista de productos en tarjetas -->
+  <div *ngIf="!cargando && !error && productos.length > 0">
+    <ion-card class="producto-card" *ngFor="let p of productos" [ngClass]="getCardClass(p.cantidad)">
+      <ion-card-content>
+        <div class="producto-row">
+          <div class="producto-info">
+            <h2>{{ p.nombre }}</h2>
+            <p>Categoría: {{ p.categoria }}</p>
+            <p>Descripción: {{ p.descripcion || '-' }}</p>
+            <p>
+              Cantidad: <strong>{{ p.cantidad }}</strong>
+            </p>
+          </div>
+          <div class="producto-actions" (click)="$event.stopPropagation()">
+            <div class="estado-wrap">
+              <ion-icon [name]="getEstadoIcon(p.cantidad)" [color]="getBadgeColor(p.cantidad)"></ion-icon>
+              <ion-badge class="estado" [color]="getBadgeColor(p.cantidad)">{{ getEstado(p.cantidad) }}</ion-badge>
+            </div>
+            <ion-button fill="clear" (click)="editar(p)">
+              <ion-icon name="create-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" color="danger" (click)="eliminar(p)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </div>
         </div>
-      </div>
-    </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Paginación -->
+  <div class="paginacion" *ngIf="!cargando && total > pageSize">
+    <ion-button size="small" (click)="anterior()" [disabled]="page === 1">Anterior</ion-button>
+    <div class="pagina-info">Página {{ page }} · {{ total }} registros</div>
+    <ion-button size="small" (click)="siguiente()" [disabled]="!hasMore">Siguiente</ion-button>
   </div>
 </ion-content>
