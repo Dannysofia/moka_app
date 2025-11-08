@@ -8,18 +8,20 @@
 </ion-header>
 
 <ion-content *ngIf="consejo as c">
-  <div class="header">
-    <div class="hero" [class.placeholder]="!c.imagen_url" [style.backgroundImage]="c.imagen_url ? 'url(' + c.imagen_url + ')' : ''" role="img" [attr.aria-label]="c.titulo"></div>
+  <div class="hero" [class.placeholder]="!c.imagen_url" [style.backgroundImage]="c.imagen_url ? 'url(' + c.imagen_url + ')' : ''" role="img" [attr.aria-label]="c.titulo"></div>
+
+  <div class="article">
     <h1>{{ c.titulo }}</h1>
     <div class="meta">
       <span *ngIf="c.categoria" class="chip">{{ c.categoria }}</span>
-      <span *ngIf="fechaPublicacion" class="date">Publicado: {{ fechaPublicacion }}</span>
-      <span *ngIf="fuenteLabel" class="source">Fuente: {{ fuenteLabel }}</span>
+      <ng-container *ngIf="fechaPublicacion">Publicado el {{ fechaPublicacion }}</ng-container>
+      <span class="dot" *ngIf="fechaPublicacion && fuenteLabel">•</span>
+      <ng-container *ngIf="fuenteLabel">Fuente: {{ fuenteLabel }}</ng-container>
     </div>
-  </div>
 
-  <div class="content">
-    <p>{{ c.contenido }}</p>
+    <div class="content">
+      <p>{{ c.contenido }}</p>
+    </div>
   </div>
 
   <ion-toast [isOpen]="showToast" [message]="toastMsg" [color]="toastColor" duration="2000" (didDismiss)="showToast = false"></ion-toast>

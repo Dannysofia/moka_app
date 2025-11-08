@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConsejosService } from '../services/consejos-services';
 import { Consejo } from '../model/consejos-model';
@@ -8,13 +9,14 @@ import { Consejo } from '../model/consejos-model';
 @Component({
   selector: 'app-consejos',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, FormsModule],
   templateUrl: './consejos-page.html',
   styleUrls: ['./consejos-page.scss'],
 })
 export class ConsejosPage implements OnInit {
   loading = true;
   consejos: Consejo[] = [];
+  searchTerm = '';
   toastMsg = '';
   toastColor: 'warning' | 'danger' | 'success' = 'warning';
   showToast = false;
@@ -35,6 +37,15 @@ export class ConsejosPage implements OnInit {
   }
 
   trackById(_i: number, c: Consejo) { return c.id; }
+
+  get filtered(): Consejo[] {
+    const t = this.searchTerm?.trim().toLowerCase();
+    if (!t) return this.consejos;
+    return this.consejos.filter((c) => {
+      const values = [c.titulo, c.contenido || ''];
+      return values.some((v) => (v || '').toString().toLowerCase().includes(t));
+    });
+  }
 
   private async cargar() {
     this.loading = true;

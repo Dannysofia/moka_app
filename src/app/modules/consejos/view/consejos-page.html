@@ -1,9 +1,11 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/inicio" text="Volver al inicio" color="success"></ion-back-button>
-    </ion-buttons>
     <ion-title>Consejos</ion-title>
+    <ion-buttons slot="end">
+      <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-menu-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -12,12 +14,22 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <div class="grid" *ngIf="consejos && consejos.length; else vacio">
-    <div class="card" *ngFor="let c of consejos; trackBy: trackById" (click)="verDetalle(c.id)">
+  <ion-searchbar
+    placeholder="Buscar consejos"
+    [(ngModel)]="searchTerm"
+    showClearButton="focus"
+    debounce="200">
+  </ion-searchbar>
+
+  <div class="grid" *ngIf="filtered && filtered.length; else vacio">
+    <div class="card" *ngFor="let c of filtered; trackBy: trackById" (click)="verDetalle(c.id)">
       <div class="thumb" [class.placeholder]="!c.imagen_url" [style.backgroundImage]="c.imagen_url ? 'url(' + c.imagen_url + ')' : ''" role="img" [attr.aria-label]="c.titulo"></div>
-      <div class="body">
-        <div class="title">{{ c.titulo }}</div>
-        <div class="content" *ngIf="c.contenido as texto">{{ texto }}</div>
+      <div class="overlay">
+        <div class="text">
+          <div class="title">{{ c.titulo }}</div>
+          <div class="subtitle" *ngIf="c.contenido as texto">{{ texto }}</div>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
       </div>
     </div>
   </div>
