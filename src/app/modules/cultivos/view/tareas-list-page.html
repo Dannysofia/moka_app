@@ -25,9 +25,9 @@
             <span class="status-dot" [ngClass]="statusClass(t.estado)"></span>
           </div>
           <div class="tarea-info">
-            <h2>{{ t.tipo }}</h2>
+            <h2>{{ tipoNombre(t.tipo) }}</h2>
             <p>Programada: {{ t.fechaProgramada }}</p>
-            <p>Estado: {{ t.estado }}</p>
+            <p>Estado: {{ estadoNombre(t.estado) }}</p>
           </div>
           <div class="tarea-actions">
             <ion-button fill="clear" (click)="editar(t)"><ion-icon name="create-outline"></ion-icon></ion-button>

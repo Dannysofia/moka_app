@@ -3,7 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CultivosService } from '../services/cultivos-services';
-import { Tarea } from '../model/cultivos-model';
+import { CatalogoItem, Tarea } from '../model/cultivos-model';
 
 @Component({
   selector: 'app-tareas-list',
@@ -21,6 +21,8 @@ export class TareasListPage implements OnInit {
   cultivoId!: string;
   cultivoNombre: string | undefined;
   tareas: Tarea[] = [];
+  tiposTareaMap = new Map<string, string>();
+  estadosTareaMap = new Map<string, string>();
   loading = true;
   toastMsg = '';
   toastColor: 'success' | 'warning' | 'danger' = 'success';
@@ -29,12 +31,16 @@ export class TareasListPage implements OnInit {
   async ngOnInit() {
     this.cultivoId = this.route.snapshot.paramMap.get('id')!;
     await this.cargarCultivo();
+    await this.cargarTiposTarea();
+    await this.cargarEstadosTarea();
     await this.cargar();
   }
 
   // Refresca cuando se vuelve a esta vista
   async ionViewWillEnter() {
     await this.cargarCultivo();
+    await this.cargarTiposTarea(true);
+    await this.cargarEstadosTarea(true);
     await this.cargar();
   }
 
@@ -42,6 +48,24 @@ export class TareasListPage implements OnInit {
     try {
       const c = await this.srv.obtenerCultivo(this.cultivoId);
       this.cultivoNombre = c?.nombre;
+    } catch {}
+  }
+
+  private async cargarEstadosTarea(force = false) {
+    if (this.estadosTareaMap.size && !force) return;
+    try {
+      const estados = await this.srv.listarEstadosTarea();
+      this.estadosTareaMap.clear();
+      estados.forEach((e: CatalogoItem) => this.estadosTareaMap.set(e.codigo, e.nombre));
+    } catch {}
+  }
+
+  private async cargarTiposTarea(force = false) {
+    if (this.tiposTareaMap.size && !force) return;
+    try {
+      const tipos = await this.srv.listarTiposTarea();
+      this.tiposTareaMap.clear();
+      tipos.forEach((t: CatalogoItem) => this.tiposTareaMap.set(t.codigo, t.nombre));
     } catch {}
   }
 
@@ -111,5 +135,15 @@ export class TareasListPage implements OnInit {
     if (e.startsWith('comp')) return 'completed'; // Completada / COMPLETADA / COMP
     if (e.startsWith('proc')) return 'processed'; // Procesada / PROCESADA / PROC
     return 'pending'; // Pendiente / PENDIENTE / PEND
+  }
+
+  tipoNombre(codigo: string | undefined): string {
+    if (!codigo) return 'Tipo sin definir';
+    return this.tiposTareaMap.get(codigo) || codigo;
+  }
+
+  estadoNombre(codigo: string | undefined): string {
+    if (!codigo) return 'Estado sin definir';
+    return this.estadosTareaMap.get(codigo) || codigo;
   }
 }
