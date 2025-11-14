@@ -16,11 +16,19 @@ export class RegisterPage {
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.form = this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-      telefono: ['', [Validators.pattern('^[0-9]{10,}$')]],
-      correo: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      nombre: ['', [Validators.required, Validators.maxLength(20), Validators.pattern(/^[A-Za-z\s]+$/)]],
+      apellido: ['', [Validators.required, Validators.maxLength(20), Validators.pattern(/^[A-Za-z\s]+$/)]],
+      telefono: ['', [Validators.pattern(/^(\d{10})?$/)]],
+      correo: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(6),
+          Validators.maxLength(50),
+          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/),
+        ],
+      ],
     });
   }
 
@@ -55,5 +63,21 @@ export class RegisterPage {
 
   goToLogin() {
     this.router.navigate(['/auth/login']);
+  }
+
+  onOnlyLettersInput(controlName: 'nombre' | 'apellido', event: CustomEvent) {
+    const value = (event.detail as any)?.value ?? '';
+    const cleaned = value.toString().replace(/[^A-Za-z\s]/g, '');
+    if (cleaned !== value) {
+      this.form.get(controlName)?.setValue(cleaned, { emitEvent: false });
+    }
+  }
+
+  onTelefonoInput(event: CustomEvent) {
+    const value = (event.detail as any)?.value ?? '';
+    const digits = value.toString().replace(/\D/g, '').slice(0, 10);
+    if (digits !== value) {
+      this.form.get('telefono')?.setValue(digits, { emitEvent: false });
+    }
   }
 }

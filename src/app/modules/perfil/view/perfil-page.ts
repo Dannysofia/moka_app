@@ -23,13 +23,13 @@ export class PerfilPage implements OnInit {
     private toastController: ToastController,
   ) {
     this.form = this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
+      nombre: ['', [Validators.required, Validators.maxLength(20), Validators.pattern(/^[A-Za-z\s]+$/)]],
+      apellido: ['', [Validators.required, Validators.maxLength(20), Validators.pattern(/^[A-Za-z\s]+$/)]],
       telefono: [
         '',
-        [Validators.required, Validators.pattern(/^\d{10}$/)]
+        [Validators.pattern(/^(\d{10})?$/)]
       ],
-      correo: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
+      correo: [{ value: '', disabled: true }, [Validators.required, Validators.email, Validators.maxLength(100)]],
     });
   }
 
@@ -91,6 +91,22 @@ export class PerfilPage implements OnInit {
       position: 'top',
     });
     await toast.present();
+  }
+
+  onTelefonoInput(event: CustomEvent) {
+    const value = (event.detail as any)?.value ?? '';
+    const digits = value.toString().replace(/\D/g, '').slice(0, 10);
+    if (digits !== value) {
+      this.form.get('telefono')?.setValue(digits, { emitEvent: false });
+    }
+  }
+
+  onOnlyLettersInput(controlName: 'nombre' | 'apellido', event: CustomEvent) {
+    const value = (event.detail as any)?.value ?? '';
+    const cleaned = value.toString().replace(/[^A-Za-z\s]/g, '');
+    if (cleaned !== value) {
+      this.form.get(controlName)?.setValue(cleaned, { emitEvent: false });
+    }
   }
 }
 

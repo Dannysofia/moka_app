@@ -11,7 +11,7 @@
     <div class="logo-moka">
       <img src="assets/logo1.png" alt="Logo Moka" />
     </div>
-    <h1 class="welcome">Inicio de sesión</h1>
+    <h1 class="welcome">Inicio de Sesion</h1>
 
     <ion-toast
       [isOpen]="toastOpen"
@@ -67,8 +67,9 @@
       }
 
       <ion-button class="primary" expand="block" type="submit" [disabled]="form.invalid">
-        Iniciar Sesión
+        Iniciar Sesion
       </ion-button>
+      <ion-note *ngIf="errorMsg" color="danger" class="error">{{ errorMsg }}</ion-note>
     </form>
     <div class="links">
       <div class="register-link">
@@ -77,3 +78,4 @@
     </div>
   </div>
 </ion-content>
+

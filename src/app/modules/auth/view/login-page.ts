@@ -48,13 +48,20 @@ export class LoginPage {
     const { email, password } = this.form.value;
     this.loading = true;
     try {
-      const result = await this.authService.login(email, password);
-      // Redirigir a la página de inicio si el login es exitoso
+      await this.authService.login(email, password);
       await this.router.navigate(['/inicio']);
     } catch (error: any) {
-      this.errorMsg = error.message || 'Error al iniciar sesión';
+      const message = (error?.message || '').toLowerCase();
+      if (message.includes('invalid') || message.includes('email') || message.includes('password')) {
+        this.errorMsg = 'Credenciales invalidas.';
+      } else {
+        this.errorMsg = 'Error al iniciar sesion.';
+      }
     } finally {
       this.loading = false;
     }
   }
 }
+
+
+

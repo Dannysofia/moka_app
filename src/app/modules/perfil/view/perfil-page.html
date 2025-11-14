@@ -20,10 +20,20 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
       <label class="field-label">Nombre</label>
       <ion-item lines="none" class="field">
-        <ion-input type="text" formControlName="nombre" placeholder="Ingresa tu nombre"></ion-input>
+        <ion-input
+          type="text"
+          formControlName="nombre"
+          placeholder="Ingresa tu nombre"
+          maxlength="20"
+          inputmode="text"
+          pattern="[A-Za-z ]*"
+          (ionInput)="onOnlyLettersInput('nombre', $event)"
+        ></ion-input>
       </ion-item>
       @if (form.get('nombre')?.touched && form.get('nombre')?.invalid) {
-      <ion-note class="error">El nombre es obligatorio.</ion-note>
+      <ion-note class="error"
+        >{{ form.get('nombre')?.errors?.['required'] ? 'El nombre es obligatorio.' : 'Solo se permiten letras.' }}</ion-note
+      >
       }
 
       <label class="field-label">Apellidos</label>
@@ -32,10 +42,16 @@
           type="text"
           formControlName="apellido"
           placeholder="Ingresa tus apellidos"
+          maxlength="20"
+          inputmode="text"
+          pattern="[A-Za-z ]*"
+          (ionInput)="onOnlyLettersInput('apellido', $event)"
         ></ion-input>
       </ion-item>
       @if (form.get('apellido')?.touched && form.get('apellido')?.invalid) {
-      <ion-note class="error">El apellido es obligatorio.</ion-note>
+      <ion-note class="error"
+        >{{ form.get('apellido')?.errors?.['required'] ? 'El apellido es obligatorio.' : 'Solo se permiten letras.' }}</ion-note
+      >
       }
 
       <label class="field-label">Teléfono</label>
@@ -43,14 +59,15 @@
         <ion-input
           type="tel"
           formControlName="telefono"
-          placeholder="Ingresa tu teléfono"
+          placeholder="Ingresa tu telefono"
+          maxlength="10"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          (ionInput)="onTelefonoInput($event)"
         ></ion-input>
       </ion-item>
       @if (form.get('telefono')?.touched && form.get('telefono')?.invalid) {
-      <ion-note
-        class="error"
-        >{{ form.get('telefono')?.errors?.['required'] ? 'El teléfono es obligatorio.' : 'Debe tener 10 dígitos numéricos.' }}</ion-note
-      >
+      <ion-note class="error">Debe tener 10 digitos numericos.</ion-note>
       }
 
       <label class="field-label">Correo electrónico</label>
@@ -59,13 +76,15 @@
           type="email"
           formControlName="correo"
           placeholder="Tu correo"
+          maxlength="100"
           [readonly]="true"
           [disabled]="true"
         ></ion-input>
       </ion-item>
-
       <ion-button expand="block" type="submit" [disabled]="loading">Guardar cambios</ion-button>
       <ion-note *ngIf="errorMsg" color="danger">{{ errorMsg }}</ion-note>
     </form>
   </div>
 </ion-content>
+
+
