@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CultivosService } from '../services/cultivos-services';
@@ -26,6 +26,7 @@ export class CultivosListPage implements OnInit {
   private srv = inject(CultivosService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private alertCtrl = inject(AlertController);
 
   async ngOnInit() {
     this.route.queryParamMap.subscribe((p) => {
@@ -48,9 +49,6 @@ export class CultivosListPage implements OnInit {
     this.error = '';
     try {
       this.cultivos = await this.srv.listarCultivos();
-      if (!this.cultivos.length) {
-        this.alert('Aún no tiene cultivos registrados, cree el primero para empezar', 'warning');
-      }
     } catch (e: any) {
       this.alert('No fue posible cargar los cultivos, inténtelo nuevamente', 'danger');
       this.error = e?.message || 'Error';
@@ -64,15 +62,27 @@ export class CultivosListPage implements OnInit {
   verTareas(id: string) { this.router.navigate(['/cultivos', id, 'tareas']); }
   
   async eliminar(c: Cultivo) {
-    const ok = confirm('¿Está seguro de eliminar este cultivo?');
-    if (!ok) return;
-    try {
-      await this.srv.eliminarCultivo(c.id);
-      this.alert('El cultivo fue eliminado exitosamente', 'success');
-      this.cargar();
-    } catch (e: any) {
-      this.alert('No se pudo eliminar el cultivo, inténtelo nuevamente', 'danger');
-    }
+    const alert = await this.alertCtrl.create({
+      header: 'Confirmación',
+      message: '¿Desea eliminar este cultivo?',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async () => {
+            try {
+              await this.srv.eliminarCultivo(c.id);
+              this.alert('El cultivo fue eliminado exitosamente', 'success');
+              this.cargar();
+            } catch {
+              this.alert('No se pudo eliminar el cultivo, inténtelo nuevamente', 'danger');
+            }
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   private alert(msg: string, color: 'success' | 'warning' | 'danger' = 'success') {
@@ -94,5 +104,13 @@ export class CultivosListPage implements OnInit {
       const values = [c.nombre, c.tipo, c.fechaSiembra, String(c.area ?? '')];
       return values.some(v => (v || '').toString().toLowerCase().includes(term));
     });
+  }
+
+  get emptyStateText(): string {
+    const term = this.searchTerm?.trim();
+    if (term) {
+      return 'No se encontraron cultivos que coincidan con la búsqueda';
+    }
+    return 'Aún no tiene cultivos registrados, cree el primero para empezar';
   }
 }

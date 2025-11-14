@@ -57,7 +57,7 @@
     <section class="cooperativas-section">
       <div class="section-header">
         <h3>Cooperativas</h3>
-        <ion-button size="small" fill="solid" color="success" (click)="verMasCooperativas()">Ver más</ion-button>
+        <ion-button size="small" (click)="verMasCooperativas()">Ver más</ion-button>
       </div>
       <ng-container *ngIf="!loading.cooperativas; else skCoops">
         <div *ngIf="cooperativas.length; else noCoops" class="cooperativas-list">

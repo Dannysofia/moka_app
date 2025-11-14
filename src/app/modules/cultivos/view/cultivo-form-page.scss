@@ -1,6 +1,10 @@
 .form {
   padding: 12px;
 }
+
+ion-toolbar ion-button.tareas-link {
+  --color: var(--ion-menu-button);
+}
 .field {
   margin-bottom: 10px;
   border-radius: 10px;
@@ -29,4 +33,9 @@
   color: #ffff;
   border-radius: 5px;
   flex: 1;
+}
+
+:host ion-toast[color='success'] {
+  --background: var(--ion-menu-button);
+  --color: #ffffff;
 }

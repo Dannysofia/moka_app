@@ -42,6 +42,15 @@
     <div class="empty">Este cultivo no tiene tareas registradas</div>
   </ng-template>
 
+  <ion-toast
+    [isOpen]="showToast"
+    (didDismiss)="showToast=false"
+    [message]="toastMsg"
+    [color]="toastColor"
+    duration="2500"
+    position="top">
+  </ion-toast>
+
 </ion-content>
 
 

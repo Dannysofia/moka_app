@@ -68,7 +68,7 @@ export class CultivoFormPage implements OnInit {
         this.router.navigate(['/cultivos'], { queryParams: { saved: '1', msg: 'Cambios guardados correctamente' } });
       } else {
         await this.srv.crearCultivo(payload);
-        this.router.navigate(['/cultivos'], { queryParams: { saved: '1', msg: '¡Cultivo guardado con éxito!' } });
+        this.router.navigate(['/cultivos'], { queryParams: { saved: '1', msg: 'Cultivo creado con éxito' } });
       }
     } catch (e: any) {
       const msg = e?.message || 'No se pudo actualizar el cultivo, inténtelo nuevamente';

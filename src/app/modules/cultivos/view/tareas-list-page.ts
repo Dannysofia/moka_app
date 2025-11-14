@@ -73,8 +73,6 @@ export class TareasListPage implements OnInit {
     this.loading = true;
     try {
       this.tareas = await this.srv.listarTareas(this.cultivoId);
-      if (!this.tareas.length)
-        this.alert('Este cultivo aún no tiene tareas registradas', 'warning');
     } catch {
       this.alert('No fue posible cargar las tareas, inténtelo nuevamente', 'danger');
     } finally {
