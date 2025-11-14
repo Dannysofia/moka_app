@@ -12,6 +12,10 @@ ion-content {
   font-family: 'Roboto', 'Helvetica Neue', sans-serif;
 }
 
+ion-back-button {
+  display: none !important;
+}
+
 // Estados de la vista
 .loading-state,
 .error-state,
