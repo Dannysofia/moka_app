@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { Chart, registerables } from 'chart.js';
 import { FinanzasService } from '../services/finanzas.service';
-import { ResumenFinanciero, DistribucionGastos, Gasto } from '../model/finanzas.model';
+import { ResumenFinanciero, DistribucionGastos, Transaccion } from '../model/finanzas.model';
 
 Chart.register(...registerables);
 
@@ -26,17 +26,28 @@ export class FinancePage implements OnInit, AfterViewInit {
   balanceTotal: number = 0;
 
   distribucionGastos: DistribucionGastos[] = [];
-  listaGastos: Gasto[] = [];
+  listaGastos: Transaccion[] = [];
+  listaIngresos: Transaccion[] = [];
   colores = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444'];
   fechaActual: string = '';
+  fechaMaxima: string = new Date().toISOString();
   private chart: any;
+
+  // Estados de la vista
+  cargando: boolean = false;
+  error: boolean = false;
+  mensajeError: string = '';
 
   // Control del modal
   mostrarModal: boolean = false;
-  nuevoGasto: Gasto = {
+  modoEdicion: boolean = false;
+  transaccionEditando: number | null = null;
+  nuevaTransaccion: Transaccion = {
+    tipo: 'gasto',
+    fecha: new Date().toISOString(),
+    monto: 0,
     categoria: '',
-    descripcion: '',
-    monto: 0
+    notas: ''
   };
 
   constructor(private finanzasService: FinanzasService) { 
@@ -48,19 +59,60 @@ export class FinancePage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    setTimeout(() => this.crearGraficoPastel(), 100);
+    setTimeout(() => {
+      console.log('ngAfterViewInit - pieChart:', this.pieChart);
+      console.log('ngAfterViewInit - distribucionGastos:', this.distribucionGastos);
+      if (this.distribucionGastos.length > 0) {
+        this.crearGraficoPastel();
+      }
+    }, 1000);
   }
 
-  cargarDatos() {
-    const resumen = this.finanzasService.getResumenFinanciero();
-    this.ingresos = resumen.ingresos;
-    this.gastos = resumen.gastos;
-    this.ahorro = resumen.ahorro;
-    this.inversiones = resumen.inversiones;
-    this.balanceTotal = resumen.balanceTotal;
+  /**
+   * Cargar datos desde Supabase
+   */
+  async cargarDatos() {
+    this.cargando = true;
+    this.error = false;
+    this.mensajeError = '';
 
-    this.distribucionGastos = this.finanzasService.getDistribucionGastos();
-    this.listaGastos = this.finanzasService.getListaGastos();
+    try {
+      const resumen = await this.finanzasService.calcularResumenFinanciero();
+      this.ingresos = resumen.ingresos;
+      this.gastos = resumen.gastos;
+      this.ahorro = resumen.ahorro;
+      this.inversiones = resumen.inversiones;
+      this.balanceTotal = resumen.balanceTotal;
+
+      this.distribucionGastos = await this.finanzasService.calcularDistribucionGastos();
+
+      const transacciones = await this.finanzasService.getTransaccionesMesActual();
+      this.listaGastos = transacciones.filter(t => t.tipo === 'gasto');
+      this.listaIngresos = transacciones.filter(t => t.tipo === 'ingreso');
+
+      this.cargando = false;
+
+      setTimeout(() => {
+        if (this.distribucionGastos.length > 0) {
+          console.log('Intentando crear gráfico después de cargar datos');
+          this.crearGraficoPastel();
+        } else {
+          console.log('No hay distribución de gastos para mostrar');
+        }
+      }, 300);
+    } catch (err: any) {
+      this.error = true;
+      this.mensajeError = err.message || 'No fue posible cargar los datos financieros';
+      this.cargando = false;
+      console.error('Error al cargar datos:', err);
+    }
+  }
+
+  /**
+   * Recargar datos (botón refresh)
+   */
+  recargarDatos() {
+    this.cargarDatos();
   }
 
   establecerFecha() {
@@ -71,41 +123,116 @@ export class FinancePage implements OnInit, AfterViewInit {
   }
 
   abrirFormularioGasto() {
+    this.modoEdicion = false;
+    this.transaccionEditando = null;
+    this.resetearFormulario();
     this.mostrarModal = true;
   }
 
   cerrarModal() {
     this.mostrarModal = false;
+    this.modoEdicion = false;
+    this.transaccionEditando = null;
     this.resetearFormulario();
   }
 
-  agregarGasto() {
-    if (this.nuevoGasto.categoria && this.nuevoGasto.descripcion && this.nuevoGasto.monto > 0) {
+  /**
+   * Abrir modal para editar una transacción
+   */
+  editarTransaccion(transaccion: Transaccion) {
+    this.modoEdicion = true;
+    this.transaccionEditando = transaccion.id || null;
+    this.nuevaTransaccion = {
+      tipo: transaccion.tipo,
+      fecha: transaccion.fecha,
+      monto: transaccion.monto,
+      categoria: transaccion.categoria,
+      notas: transaccion.notas || ''
+    };
+    this.mostrarModal = true;
+  }
+
+  /**
+   * Agregar o actualizar transacción en Supabase
+   */
+  async agregarGasto() {
+    if (this.nuevaTransaccion.categoria && 
+        this.nuevaTransaccion.notas && 
+        this.nuevaTransaccion.monto > 0) {
       
-      // Agregar el gasto al servicio
-      this.finanzasService.agregarGasto(this.nuevoGasto);
-      
-      // Recargar todos los datos
-      this.cargarDatos();
-      
-      // Actualizar el gráfico
-      this.crearGraficoPastel();
-      
-      // Cerrar modal y resetear
-      this.cerrarModal();
+      try {
+        if (this.modoEdicion && this.transaccionEditando) {
+          await this.finanzasService.actualizarTransaccion(
+            this.transaccionEditando, 
+            this.nuevaTransaccion
+          );
+          console.log('Transacción actualizada exitosamente');
+        } else {
+          await this.finanzasService.agregarTransaccion(this.nuevaTransaccion);
+          console.log('Transacción agregada exitosamente');
+        }
+        
+        await this.cargarDatos();
+        this.cerrarModal();
+      } catch (err: any) {
+        console.error('Error al guardar transacción:', err);
+        alert('Error al guardar la transacción: ' + err.message);
+      }
     }
   }
 
+  /**
+   * Eliminar una transacción
+   */
+  async eliminarTransaccion(transaccion: Transaccion) {
+    if (!transaccion.id) return;
+
+    const tipoTexto = transaccion.tipo === 'ingreso' ? 'ingreso' : 'gasto';
+    const confirmar = confirm(
+      `¿Estás seguro de eliminar este ${tipoTexto}?\n\n` +
+      `${transaccion.categoria}: ${transaccion.monto}\n` +
+      `${transaccion.notas}`
+    );
+
+    if (confirmar) {
+      try {
+        await this.finanzasService.eliminarTransaccion(transaccion.id);
+        console.log('Transacción eliminada exitosamente');
+        await this.cargarDatos();
+      } catch (err: any) {
+        console.error('Error al eliminar transacción:', err);
+        alert('Error al eliminar la transacción: ' + err.message);
+      }
+    }
+  }
+
+  /**
+   * Cuando cambia el tipo de transacción, limpiar categoría
+   */
+  onTipoChange() {
+    this.nuevaTransaccion.categoria = '';
+  }
+
   resetearFormulario() {
-    this.nuevoGasto = {
+    this.nuevaTransaccion = {
+      tipo: 'gasto',
+      fecha: new Date().toISOString(),
+      monto: 0,
       categoria: '',
-      descripcion: '',
-      monto: 0
+      notas: ''
     };
   }
 
   crearGraficoPastel() {
-    if (!this.pieChart) return;
+    if (!this.pieChart) {
+      console.log('pieChart no está disponible aún');
+      return;
+    }
+    
+    if (this.distribucionGastos.length === 0) {
+      console.log('No hay datos de distribución para mostrar');
+      return;
+    }
     
     const ctx = this.pieChart.nativeElement.getContext('2d');
     
@@ -116,14 +243,17 @@ export class FinancePage implements OnInit, AfterViewInit {
     const labels = this.distribucionGastos.map(d => d.categoria);
     const data = this.distribucionGastos.map(d => d.porcentaje);
     
+    console.log('Creando gráfico con:', { labels, data });
+    
     this.chart = new Chart(ctx, {
       type: 'pie',
       data: {
         labels: labels,
         datasets: [{
           data: data,
-          backgroundColor: this.colores,
-          borderWidth: 0
+          backgroundColor: this.colores.slice(0, labels.length),
+          borderWidth: 2,
+          borderColor: '#ffffff'
         }]
       },
       options: {
