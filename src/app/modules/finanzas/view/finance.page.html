@@ -4,6 +4,11 @@
       <ion-back-button defaultHref="/inicio" text=""></ion-back-button>
     </ion-buttons>
     <ion-title>Gestión Financiera</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="recargarDatos()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
   
   <!-- Barra de fecha -->
@@ -18,81 +23,154 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="content-wrapper">
     
-    <ion-card class="finance-card">
-      <ion-card-header>
-        <ion-card-subtitle>Resumen Financiero</ion-card-subtitle>
-      </ion-card-header>
+    <!-- Estado: Cargando -->
+    <div class="loading-state" *ngIf="cargando">
+      <ion-spinner color="success" name="crescent"></ion-spinner>
+      <p>Cargando datos financieros...</p>
+    </div>
 
-      <ion-card-content>
-        <div class="summary-list">
-          
-          <div class="summary-item">
-            <span class="summary-label">Ingresos del Mes</span>
-            <span class="summary-value positive">{{ ingresos | currency:'USD':'symbol':'1.2-2' }}</span>
-          </div>
+    <!-- Estado: Error -->
+    <div class="error-state" *ngIf="error && !cargando">
+      <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+      <h3>Error al cargar</h3>
+      <p>{{ mensajeError }}</p>
+      <ion-button color="success" (click)="recargarDatos()">
+        <ion-icon slot="start" name="refresh-outline"></ion-icon>
+        Reintentar
+      </ion-button>
+    </div>
 
-          <div class="summary-item">
-            <span class="summary-label">Gastos del Mes</span>
-            <span class="summary-value negative">{{ gastos | currency:'USD':'symbol':'1.2-2' }}</span>
-          </div>
+    <!-- Contenido principal -->
+    <div *ngIf="!cargando && !error">
+      
+      <ion-card class="finance-card">
+        <ion-card-header>
+          <ion-card-subtitle>Resumen Financiero</ion-card-subtitle>
+        </ion-card-header>
 
-          <div class="summary-item">
-            <span class="summary-label">Ahorro Acumulado</span>
-            <span class="summary-value neutral">{{ ahorro | currency:'USD':'symbol':'1.2-2' }}</span>
-          </div>
-
-          <div class="summary-item">
-            <span class="summary-label">Inversiones</span>
-            <span class="summary-value neutral">{{ inversiones | currency:'USD':'symbol':'1.2-2' }}</span>
-          </div>
-
-          <div class="total-section">
-            <div class="total-label">Balance Total</div>
-            <div class="total-amount">{{ balanceTotal | currency:'USD':'symbol':'1.2-2' }}</div>
-          </div>
-
-        </div>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Diagrama de Pastel -->
-    <ion-card class="chart-card">
-      <ion-card-header>
-        <ion-card-subtitle>Distribución de Gastos</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
-        <div class="chart-container">
-          <canvas #pieChart></canvas>
-        </div>
-        <div class="chart-legend">
-          <div class="legend-item" *ngFor="let item of distribucionGastos; let i = index">
-            <span class="legend-color" [style.background-color]="colores[i]"></span>
-            <span class="legend-label">{{item.categoria}} ({{item.porcentaje}}%)</span>
-          </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Lista de Gastos Recientes -->
-    <ion-card class="expenses-card">
-      <ion-card-header>
-        <ion-card-subtitle>Gastos Recientes</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
-        <div class="expenses-list" *ngIf="listaGastos.length > 0; else noGastos">
-          <div class="expense-item" *ngFor="let gasto of listaGastos">
-            <div class="expense-info">
-              <span class="expense-category">{{ gasto.categoria }}</span>
-              <span class="expense-description">{{ gasto.descripcion }}</span>
+        <ion-card-content>
+          <div class="summary-list">
+            
+            <div class="summary-item">
+              <span class="summary-label">Ingresos del Mes Moka</span>
+              <span class="summary-value positive">{{ ingresos | currency:'USD':'symbol':'1.2-2' }}</span>
             </div>
-            <span class="expense-amount">-{{ gasto.monto | currency:'USD':'symbol':'1.2-2' }}</span>
+
+            <div class="summary-item">
+              <span class="summary-label">Gastos del Mes Moka</span>
+              <span class="summary-value negative">{{ gastos | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Ahorro Acumulado Moka</span>
+              <span class="summary-value neutral">{{ ahorro | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Inversiones</span>
+              <span class="summary-value neutral">{{ inversiones | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+
+            <div class="total-section">
+              <div class="total-label">Balance Total</div>
+              <div class="total-amount">{{ balanceTotal | currency:'USD':'symbol':'1.2-2' }}</div>
+            </div>
+
           </div>
-        </div>
-        <ng-template #noGastos>
-          <p class="no-data">No hay gastos registrados</p>
-        </ng-template>
-      </ion-card-content>
-    </ion-card>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Diagrama de Pastel -->
+      <ion-card class="chart-card">
+        <ion-card-header>
+          <ion-card-subtitle>Distribución de Gastos Moka</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <div *ngIf="distribucionGastos.length > 0; else noDistribucion">
+            <div class="chart-container">
+              <canvas #pieChart></canvas>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item" *ngFor="let item of distribucionGastos; let i = index">
+                <span class="legend-color" [style.background-color]="colores[i]"></span>
+                <span class="legend-label">{{item.categoria}} ({{item.porcentaje}}%)</span>
+              </div>
+            </div>
+          </div>
+          <ng-template #noDistribucion>
+            <div class="empty-state">
+              <ion-icon name="pie-chart-outline"></ion-icon>
+              <p>No hay gastos registrados este mes</p>
+            </div>
+          </ng-template>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Lista de Gastos Recientes -->
+      <ion-card class="expenses-card">
+        <ion-card-header>
+          <ion-card-subtitle>Gastos Recientes</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="expenses-list" *ngIf="listaGastos.length > 0; else noGastos">
+            <div class="expense-item" *ngFor="let gasto of listaGastos">
+              <div class="expense-info">
+                <span class="expense-category">{{ gasto.categoria }}</span>
+                <span class="expense-description">{{ gasto.notas || 'Sin descripción' }}</span>
+                <span class="expense-date">{{ gasto.fecha | date:'short' }}</span>
+              </div>
+              <div class="expense-actions">
+                <span class="expense-amount negative">-{{ gasto.monto | currency:'USD':'symbol':'1.2-2' }}</span>
+                <div class="action-buttons">
+                  <ion-button fill="clear" size="small" color="primary" (click)="editarTransaccion(gasto)">
+                    <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" size="small" color="danger" (click)="eliminarTransaccion(gasto)">
+                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ng-template #noGastos>
+            <p class="no-data">No hay gastos registrados este mes</p>
+          </ng-template>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Lista de Ingresos Recientes -->
+      <ion-card class="expenses-card">
+        <ion-card-header>
+          <ion-card-subtitle>Ingresos Recientes</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="expenses-list" *ngIf="listaIngresos.length > 0; else noIngresos">
+            <div class="expense-item" *ngFor="let ingreso of listaIngresos">
+              <div class="expense-info">
+                <span class="expense-category">{{ ingreso.categoria }}</span>
+                <span class="expense-description">{{ ingreso.notas || 'Sin descripción' }}</span>
+                <span class="expense-date">{{ ingreso.fecha | date:'short' }}</span>
+              </div>
+              <div class="expense-actions">
+                <span class="expense-amount positive">+{{ ingreso.monto | currency:'USD':'symbol':'1.2-2' }}</span>
+                <div class="action-buttons">
+                  <ion-button fill="clear" size="small" color="primary" (click)="editarTransaccion(ingreso)">
+                    <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" size="small" color="danger" (click)="eliminarTransaccion(ingreso)">
+                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ng-template #noIngresos>
+            <p class="no-data">No hay ingresos registrados este mes</p>
+          </ng-template>
+        </ion-card-content>
+      </ion-card>
+
+    </div>
 
   </div>
 
@@ -110,7 +188,7 @@
   <ng-template>
     <ion-header>
       <ion-toolbar color="success">
-        <ion-title>Agregar Gasto</ion-title>
+        <ion-title>{{ modoEdicion ? 'Editar Transacción' : 'Agregar Transacción' }}</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="cerrarModal()">
             <ion-icon name="close"></ion-icon>
@@ -123,25 +201,42 @@
       <form (ngSubmit)="agregarGasto()">
         
         <ion-item>
+          <ion-label position="stacked">Tipo *</ion-label>
+          <ion-select [(ngModel)]="nuevaTransaccion.tipo" name="tipo" placeholder="Selecciona" (ionChange)="onTipoChange()" required>
+            <ion-select-option value="gasto">Gasto</ion-select-option>
+            <ion-select-option value="ingreso">Ingreso</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
           <ion-label position="stacked">Categoría *</ion-label>
-          <ion-select [(ngModel)]="nuevoGasto.categoria" name="categoria" placeholder="Selecciona" required>
-            <ion-select-option value="Alimentación">Alimentación</ion-select-option>
-            <ion-select-option value="Transporte">Transporte</ion-select-option>
-            <ion-select-option value="Servicios">Servicios</ion-select-option>
-            <ion-select-option value="Entretenimiento">Entretenimiento</ion-select-option>
-            <ion-select-option value="Salud">Salud</ion-select-option>
-            <ion-select-option value="Educación">Educación</ion-select-option>
+          <ion-select [(ngModel)]="nuevaTransaccion.categoria" name="categoria" placeholder="Selecciona" required>
+            <!-- Categorías para Gastos -->
+            <ion-select-option *ngIf="nuevaTransaccion.tipo === 'gasto'" value="Alimentación">Alimentación</ion-select-option>
+            <ion-select-option *ngIf="nuevaTransaccion.tipo === 'gasto'" value="Transporte">Transporte</ion-select-option>
+            <ion-select-option *ngIf="nuevaTransaccion.tipo === 'gasto'" value="Servicios">Servicios</ion-select-option>
+            <ion-select-option *ngIf="nuevaTransaccion.tipo === 'gasto'" value="Entretenimiento">Entretenimiento</ion-select-option>
+            <ion-select-option *ngIf="nuevaTransaccion.tipo === 'gasto'" value="Salud">Salud</ion-select-option>
+            <ion-select-option *ngIf="nuevaTransaccion.tipo === 'gasto'" value="Educación">Educación</ion-select-option>
+            
+            <!-- Categorías para Ingresos -->
+            <ion-select-option *ngIf="nuevaTransaccion.tipo === 'ingreso'" value="Ventas">Ventas</ion-select-option>
+            <ion-select-option *ngIf="nuevaTransaccion.tipo === 'ingreso'" value="Servicios">Servicios</ion-select-option>
+            <ion-select-option *ngIf="nuevaTransaccion.tipo === 'ingreso'" value="Inversiones">Inversiones</ion-select-option>
+            <ion-select-option *ngIf="nuevaTransaccion.tipo === 'ingreso'" value="Otros Ingresos">Otros Ingresos</ion-select-option>
+            
+            <!-- Categoría común -->
             <ion-select-option value="Otros">Otros</ion-select-option>
           </ion-select>
         </ion-item>
 
         <ion-item>
-          <ion-label position="stacked">Descripción *</ion-label>
+          <ion-label position="stacked">Descripción/Notas *</ion-label>
           <ion-input 
-            [(ngModel)]="nuevoGasto.descripcion" 
-            name="descripcion" 
+            [(ngModel)]="nuevaTransaccion.notas" 
+            name="notas" 
             type="text" 
-            placeholder="Ej: Supermercado" 
+            placeholder="Ej: Compra de café" 
             required>
           </ion-input>
         </ion-item>
@@ -149,7 +244,7 @@
         <ion-item>
           <ion-label position="stacked">Monto ($) *</ion-label>
           <ion-input 
-            [(ngModel)]="nuevoGasto.monto" 
+            [(ngModel)]="nuevaTransaccion.monto" 
             name="monto" 
             type="number" 
             placeholder="0.00" 
@@ -159,14 +254,28 @@
           </ion-input>
         </ion-item>
 
+        <ion-item>
+          <ion-label position="stacked">Fecha *</ion-label>
+          <ion-datetime 
+            [(ngModel)]="nuevaTransaccion.fecha" 
+            name="fecha"
+            presentation="date"
+            [value]="fechaMaxima"
+            [max]="fechaMaxima"
+            display-format="DD/MM/YYYY"
+            picker-format="DD MMM YYYY"
+            required>
+          </ion-datetime>
+        </ion-item>
+
         <ion-button 
           expand="block" 
           type="submit" 
           color="success" 
           class="ion-margin-top"
-          [disabled]="!nuevoGasto.categoria || !nuevoGasto.descripcion || !nuevoGasto.monto">
-          <ion-icon name="checkmark" slot="start"></ion-icon>
-          Guardar Gasto
+          [disabled]="!nuevaTransaccion.categoria || !nuevaTransaccion.notas || !nuevaTransaccion.monto">
+          <ion-icon [name]="modoEdicion ? 'checkmark-done' : 'checkmark'" slot="start"></ion-icon>
+          {{ modoEdicion ? 'Actualizar Transacción' : 'Guardar Transacción' }}
         </ion-button>
 
       </form>

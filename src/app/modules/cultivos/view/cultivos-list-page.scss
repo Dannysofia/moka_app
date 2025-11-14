@@ -64,3 +64,8 @@ h2 {
   margin: 0 0 8px;
   font-weight: 700;
 }
+
+:host ion-toast[color='success'] {
+  --background: var(--ion-menu-button);
+  --color: #ffffff;
+}

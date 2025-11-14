@@ -30,3 +30,8 @@
   border-radius: 5px;
   flex: 1;
 }
+
+:host ion-toast[color='success'] {
+  --background: var(--ion-menu-button);
+  --color: #ffffff;
+}
