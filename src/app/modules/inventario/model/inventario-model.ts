@@ -48,8 +48,20 @@ export function validarProducto(input: CrearProductoDto): string | null {
   return null;
 }
 
-export function estadoStock(cantidad: number): 'Suficiente' | 'Bajo' | 'Agotado' {
-  if (cantidad >= 20) return 'Suficiente';
-  if (cantidad >= 5) return 'Bajo';
-  return 'Agotado';
+const UMBRALES_HERRAMIENTAS = {
+  suficiente: 5,
+};
+
+export function estadoStock(
+  categoria: Categoria,
+  cantidad: number
+): 'Suficiente' | 'Bajo' | 'Agotado' {
+  if (cantidad <= 0) return 'Agotado';
+  if (cantidad === 1) return 'Bajo';
+
+  if (categoria === 'Herramientas') {
+    return cantidad >= UMBRALES_HERRAMIENTAS.suficiente ? 'Suficiente' : 'Bajo';
+  }
+
+  return 'Suficiente';
 }

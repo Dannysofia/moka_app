@@ -77,7 +77,7 @@
             inputmode="numeric"
           ></ion-input>
           <ion-note slot="helper">
-            Estado: {{ getEstado(form.cantidad) }}
+            Estado: {{ getEstado(form.cantidad, form.categoria) }}
           </ion-note>
         </ion-item>
 
@@ -103,7 +103,7 @@
 
   <!-- Lista de productos en tarjetas -->
   <div *ngIf="!cargando && !error && productos.length > 0">
-    <ion-card class="producto-card" *ngFor="let p of productos" [ngClass]="getCardClass(p.cantidad)">
+    <ion-card class="producto-card" *ngFor="let p of productos" [ngClass]="getCardClass(p.cantidad, p.categoria)">
       <ion-card-content>
         <div class="producto-row">
           <div class="producto-info">
@@ -116,8 +116,8 @@
           </div>
           <div class="producto-actions" (click)="$event.stopPropagation()">
             <div class="estado-wrap">
-              <ion-icon [name]="getEstadoIcon(p.cantidad)" [color]="getBadgeColor(p.cantidad)"></ion-icon>
-              <ion-badge class="estado" [color]="getBadgeColor(p.cantidad)">{{ getEstado(p.cantidad) }}</ion-badge>
+              <ion-icon [name]="getEstadoIcon(p.cantidad, p.categoria)" [color]="getBadgeColor(p.cantidad, p.categoria)"></ion-icon>
+              <ion-badge class="estado" [color]="getBadgeColor(p.cantidad, p.categoria)">{{ getEstado(p.cantidad, p.categoria) }}</ion-badge>
             </div>
             <ion-button fill="clear" (click)="editar(p)">
               <ion-icon name="create-outline"></ion-icon>

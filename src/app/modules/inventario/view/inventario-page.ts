@@ -116,7 +116,7 @@ export class InventarioPage implements OnInit {
       return;
     }
 
-    if (this.getEstado(this.form.cantidad) === 'Bajo') {
+    if (this.getEstado(this.form.cantidad, this.form.categoria) === 'Bajo') {
       await this.presentarToast('Este producto está con stock bajo', 'warning');
     }
 
@@ -127,26 +127,27 @@ export class InventarioPage implements OnInit {
     this.cargarProductos();
   }
 
-  getEstado(cantidad: number) {
-    return estadoStock(cantidad);
+  getEstado(cantidad: number, categoria?: Categoria) {
+    const cat = categoria ?? this.form.categoria;
+    return estadoStock(cat, cantidad);
   }
 
-  getBadgeColor(cantidad: number) {
-    const s = estadoStock(cantidad);
+  getBadgeColor(cantidad: number, categoria?: Categoria) {
+    const s = this.getEstado(cantidad, categoria);
     if (s === 'Suficiente') return 'success';
     if (s === 'Bajo') return 'warning';
     return 'danger';
   }
 
-  getCardClass(cantidad: number): string {
-    const s = estadoStock(cantidad);
+  getCardClass(cantidad: number, categoria?: Categoria): string {
+    const s = this.getEstado(cantidad, categoria);
     if (s === 'Suficiente') return 'estado-suficiente';
     if (s === 'Bajo') return 'estado-bajo';
     return 'estado-agotado';
   }
 
-  getEstadoIcon(cantidad: number): string {
-    const s = estadoStock(cantidad);
+  getEstadoIcon(cantidad: number, categoria?: Categoria): string {
+    const s = this.getEstado(cantidad, categoria);
     if (s === 'Suficiente') return 'checkmark-circle-outline';
     if (s === 'Bajo') return 'alert-circle-outline';
     return 'close-circle-outline';
