@@ -1,7 +1,15 @@
 import { Injectable } from '@angular/core';
-import { ResumenFinanciero, DistribucionGastos, Transaccion, FinancieroDB, mapFinancieroDBToApp, mapTransaccionToDB } from '../model/finanzas.model';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../auth/services/auth-services';
+import {
+  ResumenFinanciero,
+  DistribucionGastos,
+  Transaccion,
+  FinancieroDB,
+  mapFinancieroDBToApp,
+  mapTransaccionToDB
+} from '../model/finanzas.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,16 +17,21 @@ import { environment } from '../../../../environments/environment';
 export class FinanzasService {
   private supabase: SupabaseClient;
 
-  constructor() {
-    // Inicializar Supabase
+  constructor(private authService: AuthService) {
     this.supabase = createClient(
       environment.supabase.url,
       environment.supabase.anonKey
     );
   }
 
+  private getUserId(): string {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) throw new Error('Usuario no autenticado');
+    return userId;
+  }
+
   /**
-   * Obtener todas las transacciones activas desde Supabase
+   * OBTENER TODAS LAS TRANSACCIONES ACTIVAS DEL USUARIO
    */
   async getTransacciones(): Promise<Transaccion[]> {
     try {
@@ -26,16 +39,11 @@ export class FinanzasService {
         .from('financiero')
         .select('*')
         .eq('estado', 'activo')
+        .eq('user_id', this.getUserId())
         .order('fecha', { ascending: false });
 
-      if (error) {
-        console.error('Error de Supabase:', error);
-        throw new Error(`Error al obtener transacciones: ${error.message}`);
-      }
-
-      if (!data) {
-        return [];
-      }
+      if (error) throw new Error(`Error al obtener transacciones: ${error.message}`);
+      if (!data) return [];
 
       return data.map((item: FinancieroDB) => mapFinancieroDBToApp(item));
     } catch (error: any) {
@@ -45,7 +53,7 @@ export class FinanzasService {
   }
 
   /**
-   * Obtener transacciones por tipo (ingreso o gasto)
+   * OBTENER TRANSACCIONES POR TIPO
    */
   async getTransaccionesPorTipo(tipo: 'ingreso' | 'gasto'): Promise<Transaccion[]> {
     try {
@@ -54,16 +62,11 @@ export class FinanzasService {
         .select('*')
         .eq('tipo', tipo)
         .eq('estado', 'activo')
+        .eq('user_id', this.getUserId())
         .order('fecha', { ascending: false });
 
-      if (error) {
-        console.error('Error de Supabase:', error);
-        throw new Error(`Error al obtener ${tipo}s: ${error.message}`);
-      }
-
-      if (!data) {
-        return [];
-      }
+      if (error) throw new Error(`Error al obtener ${tipo}s: ${error.message}`);
+      if (!data) return [];
 
       return data.map((item: FinancieroDB) => mapFinancieroDBToApp(item));
     } catch (error: any) {
@@ -73,30 +76,25 @@ export class FinanzasService {
   }
 
   /**
-   * Obtener transacciones del mes actual
+   * OBTENER TRANSACCIONES DEL MES ACTUAL
    */
   async getTransaccionesMesActual(): Promise<Transaccion[]> {
     try {
-      const ahora = new Date();
-      const primerDia = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
-      const ultimoDia = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0);
+      const hoy = new Date();
+      const primerDia = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+      const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
 
       const { data, error } = await this.supabase
         .from('financiero')
         .select('*')
         .eq('estado', 'activo')
+        .eq('user_id', this.getUserId())
         .gte('fecha', primerDia.toISOString().split('T')[0])
         .lte('fecha', ultimoDia.toISOString().split('T')[0])
         .order('fecha', { ascending: false });
 
-      if (error) {
-        console.error('Error de Supabase:', error);
-        throw new Error(`Error al obtener transacciones del mes: ${error.message}`);
-      }
-
-      if (!data) {
-        return [];
-      }
+      if (error) throw new Error(`Error al obtener transacciones del mes: ${error.message}`);
+      if (!data) return [];
 
       return data.map((item: FinancieroDB) => mapFinancieroDBToApp(item));
     } catch (error: any) {
@@ -106,22 +104,23 @@ export class FinanzasService {
   }
 
   /**
-   * Agregar una nueva transacción
+   * AGREGAR TRANSACCIÓN (CON USER_ID)
    */
   async agregarTransaccion(transaccion: Transaccion): Promise<Transaccion> {
     try {
       const transaccionDB = mapTransaccionToDB(transaccion);
+      const transaccionConUser = {
+        ...transaccionDB,
+        user_id: this.getUserId()
+      };
 
       const { data, error } = await this.supabase
         .from('financiero')
-        .insert([transaccionDB])
+        .insert([transaccionConUser])
         .select()
         .single();
 
-      if (error) {
-        console.error('Error de Supabase:', error);
-        throw new Error(`Error al agregar transacción: ${error.message}`);
-      }
+      if (error) throw new Error(`Error al agregar transacción: ${error.message}`);
 
       return mapFinancieroDBToApp(data);
     } catch (error: any) {
@@ -131,19 +130,17 @@ export class FinanzasService {
   }
 
   /**
-   * Eliminar una transacción (soft delete)
+   * ELIMINAR (SOFT DELETE)
    */
   async eliminarTransaccion(id: number): Promise<void> {
     try {
       const { error } = await this.supabase
         .from('financiero')
         .update({ estado: 'eliminado' })
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', this.getUserId());
 
-      if (error) {
-        console.error('Error de Supabase:', error);
-        throw new Error(`Error al eliminar transacción: ${error.message}`);
-      }
+      if (error) throw new Error(`Error al eliminar transacción: ${error.message}`);
     } catch (error: any) {
       console.error('Error al eliminar transacción:', error);
       throw error;
@@ -151,7 +148,7 @@ export class FinanzasService {
   }
 
   /**
-   * Actualizar una transacción existente
+   * ACTUALIZAR TRANSACCIÓN
    */
   async actualizarTransaccion(id: number, transaccion: Transaccion): Promise<Transaccion> {
     try {
@@ -161,13 +158,11 @@ export class FinanzasService {
         .from('financiero')
         .update(transaccionDB)
         .eq('id', id)
+        .eq('user_id', this.getUserId())
         .select()
         .single();
 
-      if (error) {
-        console.error('Error de Supabase:', error);
-        throw new Error(`Error al actualizar transacción: ${error.message}`);
-      }
+      if (error) throw new Error(`Error al actualizar: ${error.message}`);
 
       return mapFinancieroDBToApp(data);
     } catch (error: any) {
@@ -177,66 +172,54 @@ export class FinanzasService {
   }
 
   /**
-   * Calcular resumen financiero desde las transacciones
+   * RESUMEN FINANCIERO
    */
   async calcularResumenFinanciero(): Promise<ResumenFinanciero> {
     try {
       const transacciones = await this.getTransaccionesMesActual();
-      
+
       const ingresos = transacciones
         .filter(t => t.tipo === 'ingreso')
         .reduce((sum, t) => sum + t.monto, 0);
-      
+
       const gastos = transacciones
         .filter(t => t.tipo === 'gasto')
         .reduce((sum, t) => sum + t.monto, 0);
 
-      // Estos valores podrían venir de otra tabla o ser calculados
-      const ahorro = 0;
-      const inversiones = 0;
-      const balanceTotal = ingresos - gastos + ahorro + inversiones;
-
       return {
         ingresos,
         gastos,
-        ahorro,
-        inversiones,
-        balanceTotal
+        ahorro: 0,
+        inversiones: 0,
+        balanceTotal: ingresos - gastos
       };
     } catch (error: any) {
-      console.error('Error al calcular resumen:', error);
+      console.error('Error en resumen financiero:', error);
       throw error;
     }
   }
 
   /**
-   * Calcular distribución de gastos por categoría
+   * DISTRIBUCIÓN DE GASTOS
    */
   async calcularDistribucionGastos(): Promise<DistribucionGastos[]> {
     try {
       const gastos = await this.getTransaccionesPorTipo('gasto');
-      
-      // Agrupar por categoría
-      const gastoPorCategoria = gastos.reduce((acc, gasto) => {
-        if (!acc[gasto.categoria]) {
-          acc[gasto.categoria] = 0;
-        }
-        acc[gasto.categoria] += gasto.monto;
+
+      const agrupado = gastos.reduce((acc, item) => {
+        acc[item.categoria] = (acc[item.categoria] || 0) + item.monto;
         return acc;
       }, {} as { [key: string]: number });
 
-      // Calcular total
-      const totalGastos = Object.values(gastoPorCategoria).reduce((sum, monto) => sum + monto, 0);
+      const total = Object.values(agrupado).reduce((a, b) => a + b, 0);
 
-      // Crear array de distribución
-      const distribucion: DistribucionGastos[] = Object.entries(gastoPorCategoria).map(([categoria, monto]) => ({
-        categoria,
-        monto,
-        porcentaje: totalGastos > 0 ? Math.round((monto / totalGastos) * 100) : 0
-      }));
-
-      // Ordenar de mayor a menor
-      return distribucion.sort((a, b) => b.monto - a.monto);
+      return Object.entries(agrupado)
+        .map(([categoria, monto]) => ({
+          categoria,
+          monto,
+          porcentaje: total ? Math.round((monto / total) * 100) : 0
+        }))
+        .sort((a, b) => b.monto - a.monto);
     } catch (error: any) {
       console.error('Error al calcular distribución:', error);
       throw error;
@@ -244,26 +227,29 @@ export class FinanzasService {
   }
 
   /**
-   * Obtener estadísticas generales
+   * ESTADÍSTICAS
    */
-  async getEstadisticas(): Promise<{ total: number, ingresos: number, gastos: number }> {
+  async getEstadisticas(): Promise<{ total: number; ingresos: number; gastos: number }> {
     try {
       const { count: total } = await this.supabase
         .from('financiero')
         .select('*', { count: 'exact', head: true })
-        .eq('estado', 'activo');
+        .eq('estado', 'activo')
+        .eq('user_id', this.getUserId());
 
       const { count: ingresos } = await this.supabase
         .from('financiero')
         .select('*', { count: 'exact', head: true })
         .eq('tipo', 'ingreso')
-        .eq('estado', 'activo');
+        .eq('estado', 'activo')
+        .eq('user_id', this.getUserId());
 
       const { count: gastos } = await this.supabase
         .from('financiero')
         .select('*', { count: 'exact', head: true })
         .eq('tipo', 'gasto')
-        .eq('estado', 'activo');
+        .eq('estado', 'activo')
+        .eq('user_id', this.getUserId());
 
       return {
         total: total || 0,
