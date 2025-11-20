@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../auth/services/auth-services';
 import { Empleado, EmpleadoDB, FormularioEmpleado, mapEmpleadoDBToApp } from '../model/personal.model';
 
 @Injectable({
@@ -9,16 +10,19 @@ import { Empleado, EmpleadoDB, FormularioEmpleado, mapEmpleadoDBToApp } from '..
 export class PersonalService {
   private supabase: SupabaseClient;
 
-  constructor() {
+  constructor(private authService: AuthService) {
     this.supabase = createClient(
       environment.supabase.url,
       environment.supabase.anonKey
     );
   }
 
-  /**
-   * Obtener todos los empleados
-   */
+  private getUserId(): string {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) throw new Error('Usuario no autenticado');
+    return userId;
+  }
+
   async getEmpleados(): Promise<Empleado[]> {
     try {
       const { data, error } = await this.supabase
@@ -40,9 +44,6 @@ export class PersonalService {
     }
   }
 
-  /**
-   * Obtener empleados activos
-   */
   async getEmpleadosActivos(): Promise<Empleado[]> {
     try {
       const { data, error } = await this.supabase
@@ -65,9 +66,6 @@ export class PersonalService {
     }
   }
 
-  /**
-   * Obtener empleado por ID
-   */
   async getEmpleadoPorId(id: string): Promise<Empleado | null> {
     try {
       const { data, error } = await this.supabase
@@ -90,13 +88,10 @@ export class PersonalService {
     }
   }
 
-  /**
-   * Crear nuevo empleado
-   */
-  async crearEmpleado(formulario: FormularioEmpleado, usuarioId: string): Promise<Empleado> {
+  async crearEmpleado(formulario: FormularioEmpleado): Promise<Empleado> {
     try {
       const nuevoEmpleado: Partial<EmpleadoDB> = {
-        usuario_id: usuarioId,
+        user_id: this.getUserId(), // ← Ahora usa user_id
         nombres: formulario.nombres,
         apellidos: formulario.apellidos,
         documento: formulario.documento || null,
@@ -126,9 +121,6 @@ export class PersonalService {
     }
   }
 
-  /**
-   * Actualizar empleado existente
-   */
   async actualizarEmpleado(id: string, formulario: FormularioEmpleado): Promise<Empleado> {
     try {
       const cambios: Partial<EmpleadoDB> = {
@@ -162,9 +154,6 @@ export class PersonalService {
     }
   }
 
-  /**
-   * Eliminar empleado
-   */
   async eliminarEmpleado(id: string): Promise<void> {
     try {
       const { error } = await this.supabase
@@ -182,9 +171,6 @@ export class PersonalService {
     }
   }
 
-  /**
-   * Cambiar estado de empleado (soft delete)
-   */
   async cambiarEstadoEmpleado(id: string, estado: string): Promise<Empleado> {
     try {
       const { data, error } = await this.supabase
@@ -206,9 +192,6 @@ export class PersonalService {
     }
   }
 
-  /**
-   * Filtrar empleados por término de búsqueda (local)
-   */
   filtrarEmpleados(empleados: Empleado[], termino: string): Empleado[] {
     const terminoLower = termino.toLowerCase().trim();
     
@@ -223,9 +206,6 @@ export class PersonalService {
     );
   }
 
-  /**
-   * Buscar empleados por nombre o documento (servidor)
-   */
   async buscarEmpleados(termino: string): Promise<Empleado[]> {
     try {
       const { data, error } = await this.supabase
@@ -248,9 +228,6 @@ export class PersonalService {
     }
   }
 
-  /**
-   * Contar empleados por estado
-   */
   async contarPorEstado(estado: string): Promise<number> {
     try {
       const { count, error } = await this.supabase
@@ -270,9 +247,6 @@ export class PersonalService {
     }
   }
 
-  /**
-   * Obtener estadísticas
-   */
   async getEstadisticas(): Promise<{ total: number, activos: number, inactivos: number }> {
     try {
       const { count: total } = await this.supabase
@@ -295,9 +269,6 @@ export class PersonalService {
     }
   }
 
-  /**
-   * Validar email
-   */
   validarEmail(email: string): boolean {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);

@@ -175,7 +175,7 @@ export class PersonalPage implements OnInit {
       } else {
         // Agregar nuevo empleado - Generar nuevo UUID para cada empleado
         const nuevoUsuarioId = this.generarUUID();
-        await this.personalService.crearEmpleado(this.formulario, nuevoUsuarioId);
+        await this.personalService.crearEmpleado(this.formulario);
         await this.mostrarToast('✅ Empleado creado exitosamente', 'success');
       }
 

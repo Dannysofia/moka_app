@@ -1,7 +1,7 @@
 // Interfaz que coincide con la tabla de Supabase
 export interface EmpleadoDB {
   id: string; // uuid
-  usuario_id: string; // uuid
+  user_id: string; // uuid - Campo para RLS (el correcto)
   nombres: string;
   apellidos: string;
   documento: string | null;
@@ -17,7 +17,7 @@ export interface EmpleadoDB {
 // Interfaz de la aplicación
 export interface Empleado {
   id: string;
-  usuario_id: string;
+  user_id: string; // ← CAMBIADO de usuario_id a user_id
   nombres: string;
   apellidos: string;
   nombreCompleto: string; // Helper para mostrar nombre completo
@@ -64,7 +64,7 @@ export enum EstadoEmpleado {
 export function mapEmpleadoDBToApp(db: EmpleadoDB): Empleado {
   return {
     id: db.id,
-    usuario_id: db.usuario_id,
+    user_id: db.user_id, // ← CAMBIADO de usuario_id a user_id
     nombres: db.nombres,
     apellidos: db.apellidos,
     nombreCompleto: `${db.nombres} ${db.apellidos}`,
