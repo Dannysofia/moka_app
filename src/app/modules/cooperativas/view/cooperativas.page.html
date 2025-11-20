@@ -1,13 +1,13 @@
 <ion-header>
-  <ion-toolbar color="success">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/inicio" text=""></ion-back-button>
-    </ion-buttons>
+  <ion-toolbar color="#fafaf9">
     <ion-title>Cooperativas</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="recargarDatos()">
         <ion-icon name="refresh-outline"></ion-icon>
       </ion-button>
+      <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-menu-button>
     </ion-buttons>
   </ion-toolbar>
   

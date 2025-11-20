@@ -84,12 +84,12 @@ export class PersonalPage implements OnInit {
       this.empleados = await this.personalService.getEmpleados();
       this.empleadosFiltrados = [...this.empleados];
       this.cargando = false;
-      console.log('✅ Empleados cargados:', this.empleados.length);
+      console.log(' Empleados cargados:', this.empleados.length);
     } catch (err: any) {
       this.error = true;
       this.mensajeError = err.message || 'No fue posible cargar los empleados';
       this.cargando = false;
-      console.error('❌ Error al cargar empleados:', err);
+      console.error(' Error al cargar empleados:', err);
       await this.mostrarToast('Error al cargar empleados', 'danger');
     }
   }
@@ -103,9 +103,9 @@ export class PersonalPage implements OnInit {
       this.totalEmpleados = stats.total;
       this.empleadosActivos = stats.activos;
       this.empleadosInactivos = stats.inactivos;
-      console.log('📊 Estadísticas:', stats);
+      console.log(' Estadísticas:', stats);
     } catch (err: any) {
-      console.error('❌ Error al cargar estadísticas:', err);
+      console.error(' Error al cargar estadísticas:', err);
     }
   }
 
@@ -171,12 +171,12 @@ export class PersonalPage implements OnInit {
           this.empleadoEditar.id,
           this.formulario
         );
-        await this.mostrarToast('✅ Empleado actualizado exitosamente', 'success');
+        await this.mostrarToast(' Empleado actualizado exitosamente', 'success');
       } else {
         // Agregar nuevo empleado - Generar nuevo UUID para cada empleado
         const nuevoUsuarioId = this.generarUUID();
-        await this.personalService.crearEmpleado(this.formulario, nuevoUsuarioId);
-        await this.mostrarToast('✅ Empleado creado exitosamente', 'success');
+        await this.personalService.crearEmpleado(this.formulario);
+        await this.mostrarToast(' Empleado creado exitosamente', 'success');
       }
 
       await loading.dismiss();
@@ -190,7 +190,7 @@ export class PersonalPage implements OnInit {
         'Error',
         err.message || 'No se pudo guardar el empleado'
       );
-      console.error('❌ Error al guardar empleado:', err);
+      console.error(' Error al guardar empleado:', err);
     }
   }
 
@@ -233,14 +233,14 @@ export class PersonalPage implements OnInit {
             try {
               await this.personalService.eliminarEmpleado(id);
               await loading.dismiss();
-              await this.mostrarToast('✅ Empleado eliminado exitosamente', 'success');
+              await this.mostrarToast(' Empleado eliminado exitosamente', 'success');
               await this.cargarEmpleados();
               await this.cargarEstadisticas();
               this.filtrarEmpleados();
             } catch (err: any) {
               await loading.dismiss();
               await this.mostrarAlerta('Error', err.message || 'No se pudo eliminar el empleado');
-              console.error('❌ Error al eliminar empleado:', err);
+              console.error(' Error al eliminar empleado:', err);
             }
           }
         }
