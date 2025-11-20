@@ -107,6 +107,11 @@ export class InventarioPage implements OnInit {
       cantidad: Number(this.form.cantidad),
     };
 
+    if (!this.editando && payload.cantidad <= 0) {
+      await this.presentarToast('La cantidad debe ser mayor a 0 para un producto nuevo', 'danger');
+      return;
+    }
+
     const res = this.editando
       ? await this.inv.actualizar(this.editando.id, payload)
       : await this.inv.crear(payload);
