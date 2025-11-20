@@ -94,7 +94,6 @@ ion-back-button {
   padding: 16px;
   max-width: 800px;
   margin: 0 auto;
-  padding-bottom: 80px; // Espacio para el FAB
 }
 
 // Finance card más delgado
@@ -369,5 +368,22 @@ ion-modal {
   ion-button[type="submit"] {
     margin-top: 24px;
     font-weight: 600;
+  }
+}
+
+// Botón de agregar en toolbar
+ion-button[color="success"] {
+  --background: #10b981;
+  --background-hover: #059669;
+  --background-activated: #047857;
+  --background-focused: #047857;
+  
+  --color: white;
+  --border-radius: 8px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  
+  ion-icon {
+    font-size: 20px;
   }
 }

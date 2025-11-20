@@ -1,9 +1,14 @@
 <ion-header>
-  <ion-toolbar color="success">
+  <ion-toolbar color="#fafaf9">
     <ion-title>Gestión Financiera</ion-title>
     <ion-buttons slot="end">
+      <!-- Botón de agregar en el toolbar -->
+      <ion-button (click)="abrirFormularioGasto()" color="success">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        Crear Producto +
+      </ion-button>
       <ion-button (click)="recargarDatos()">
-        <ion-icon name="refresh-outline"></ion-icon>
+        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
       </ion-button>
       <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
@@ -173,14 +178,6 @@
     </div>
 
   </div>
-
-  <!-- Botón FAB para agregar gasto -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button color="success" (click)="abrirFormularioGasto()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-
 </ion-content>
 
 <!-- Modal para agregar gasto -->
