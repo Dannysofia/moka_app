@@ -6,6 +6,13 @@ $color-text-primary: #1f2937;
 $color-text-secondary: #6b7280;
 $color-border: #e5e7eb;
 
+ion-toolbar:first-child {
+  --border-width: 0 0 2px 0;
+  --border-color: #e5e7eb;
+  --placeholder-color: #6b7280;
+}
+
+
 // Content con fondo blanco
 ion-content {
   --background: #fafaf9;
@@ -382,6 +389,8 @@ ion-button[color="success"] {
   --border-radius: 8px;
   --padding-start: 8px;
   --padding-end: 8px;
+  --border-width: 0 0 4px 0;
+  --border-color: #e5e7eb;
   
   ion-icon {
     font-size: 20px;

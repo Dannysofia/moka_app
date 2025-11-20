@@ -2,8 +2,9 @@
   <ion-toolbar color="#fafaf9">
     <ion-title>Gestión de Personal</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="abrirModalRegistro()">
-        <ion-icon name="add-circle-outline"></ion-icon>
+      <ion-button (click)="abrirModalRegistro()" color="success">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Crear Empleado
       </ion-button>
       <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>

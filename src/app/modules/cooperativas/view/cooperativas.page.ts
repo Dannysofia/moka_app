@@ -27,6 +27,10 @@ export class CooperativasPage implements OnInit {
   error: boolean = false;
   mensajeError: string = '';
 
+  // Control del modal
+  mostrarModal: boolean = false;
+  cooperativaSeleccionada: Cooperativa | null = null;
+
   constructor(private cooperativasService: CooperativasService) { }
 
   ngOnInit() {
@@ -72,32 +76,18 @@ export class CooperativasPage implements OnInit {
   }
 
   /**
-   * Ver detalles de una cooperativa
+   * Ver detalles de una cooperativa en modal
    */
   verDetalles(cooperativa: Cooperativa) {
-    let info = `📍 Ubicación: ${cooperativa.ubicacion || 'No disponible'}\n\n`;
-    
-    if (cooperativa.resumen) {
-      info += `📄 Resumen:\n${cooperativa.resumen}\n\n`;
-    }
-    
-    if (cooperativa.telefono) {
-      info += `📞 Teléfono: ${cooperativa.telefono}\n`;
-    }
-    
-    if (cooperativa.email) {
-      info += `✉️ Email: ${cooperativa.email}\n`;
-    }
-    
-    if (cooperativa.sitioWeb) {
-      info += `🌐 Web: ${cooperativa.sitioWeb}\n`;
-    }
-    
-    if (cooperativa.servicios && cooperativa.servicios.length > 0) {
-      const servicios = cooperativa.servicios.join('\n• ');
-      info += `\n📋 Servicios:\n• ${servicios}`;
-    }
-    
-    alert(`${cooperativa.nombre}\n\n${info.trim()}`);
+    this.cooperativaSeleccionada = cooperativa;
+    this.mostrarModal = true;
+  }
+
+  /**
+   * Cerrar modal
+   */
+  cerrarModal() {
+    this.mostrarModal = false;
+    this.cooperativaSeleccionada = null;
   }
 }

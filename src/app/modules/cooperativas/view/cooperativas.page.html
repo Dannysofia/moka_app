@@ -2,9 +2,6 @@
   <ion-toolbar color="#fafaf9">
     <ion-title>Cooperativas</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="recargarDatos()">
-        <ion-icon name="refresh-outline"></ion-icon>
-      </ion-button>
       <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
       </ion-menu-button>
@@ -134,3 +131,81 @@
 
   </div>
 </ion-content>
+
+<!-- Modal simple para detalles -->
+<ion-modal [isOpen]="mostrarModal" (didDismiss)="cerrarModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar color="success">
+        <ion-title>{{ cooperativaSeleccionada?.nombre }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding" *ngIf="cooperativaSeleccionada">
+      <!-- Información básica -->
+      <ion-item>
+        <ion-icon name="location-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Ubicación</h3>
+          <p>{{ cooperativaSeleccionada.ubicacion }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="cooperativaSeleccionada.telefono">
+        <ion-icon name="call-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Teléfono</h3>
+          <p>{{ cooperativaSeleccionada.telefono }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="cooperativaSeleccionada.email">
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Email</h3>
+          <p>{{ cooperativaSeleccionada.email }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="cooperativaSeleccionada.sitioWeb">
+        <ion-icon name="globe-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Sitio Web</h3>
+          <p>
+            <a [href]="cooperativaSeleccionada.sitioWeb" target="_blank">
+              {{ cooperativaSeleccionada.sitioWeb }}
+            </a>
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <!-- Servicios -->
+      <ion-item *ngIf="cooperativaSeleccionada && cooperativaSeleccionada.servicios && cooperativaSeleccionada.servicios.length > 0">
+        <ion-icon name="briefcase-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Servicios</h3>
+          <p>
+            <span *ngFor="let servicio of cooperativaSeleccionada.servicios" 
+                  class="servicio-chip">
+              {{ servicio }}
+            </span>
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <!-- Resumen -->
+      <ion-item *ngIf="cooperativaSeleccionada.resumen">
+        <ion-icon name="document-text-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Resumen</h3>
+          <p>{{ cooperativaSeleccionada.resumen }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-content>
+  </ng-template>
+</ion-modal>

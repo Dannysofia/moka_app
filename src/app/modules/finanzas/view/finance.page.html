@@ -4,26 +4,17 @@
     <ion-buttons slot="end">
       <!-- Botón de agregar en el toolbar -->
       <ion-button (click)="abrirFormularioGasto()" color="success">
-        <ion-icon name="add-outline" slot="start"></ion-icon>
-        Crear Producto +
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Crear Producto
       </ion-button>
-      <ion-button (click)="recargarDatos()">
-        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
-      </ion-button>
+      
       <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
       </ion-menu-button>
     </ion-buttons>
   </ion-toolbar>
   
-  <!-- Barra de fecha -->
-  <ion-toolbar class="date-toolbar">
-    <div class="date-container">
-      <ion-icon name="calendar-outline"></ion-icon>
-      <span>{{ fechaActual }}</span>
-    </div>
-  </ion-toolbar>
-</ion-header>
+  
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="content-wrapper">
