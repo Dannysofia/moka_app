@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
 import { Chart, registerables } from 'chart.js';
 import { FinanzasService } from '../services/finanzas.service';
 import { ResumenFinanciero, DistribucionGastos, Transaccion } from '../model/finanzas.model';
@@ -50,7 +50,7 @@ export class FinancePage implements OnInit, AfterViewInit {
     notas: ''
   };
 
-  constructor(private finanzasService: FinanzasService) { 
+  constructor(private finanzasService: FinanzasService, private alertCtrl: AlertController) { 
     this.establecerFecha();
   }
 
@@ -186,24 +186,32 @@ export class FinancePage implements OnInit, AfterViewInit {
    */
   async eliminarTransaccion(transaccion: Transaccion) {
     if (!transaccion.id) return;
+    const id = transaccion.id as number;
 
     const tipoTexto = transaccion.tipo === 'ingreso' ? 'ingreso' : 'gasto';
-    const confirmar = confirm(
-      `¿Estás seguro de eliminar este ${tipoTexto}?\n\n` +
-      `${transaccion.categoria}: ${transaccion.monto}\n` +
-      `${transaccion.notas}`
-    );
+    const alert = await this.alertCtrl.create({
+      header: 'Confirmación',
+      message: `¿Desea eliminar este ${tipoTexto}?`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async () => {
+            try {
+              await this.finanzasService.eliminarTransaccion(id);
+              console.log('Transaccion eliminada exitosamente');
+              await this.cargarDatos();
+            } catch (err: any) {
+              console.error('Error al eliminar transaccion:', err);
+              window.alert('Error al eliminar la transaccion: ' + err.message);
+            }
+          },
+        },
+      ],
+    });
 
-    if (confirmar) {
-      try {
-        await this.finanzasService.eliminarTransaccion(transaccion.id);
-        console.log('Transacción eliminada exitosamente');
-        await this.cargarDatos();
-      } catch (err: any) {
-        console.error('Error al eliminar transacción:', err);
-        alert('Error al eliminar la transacción: ' + err.message);
-      }
-    }
+    await alert.present();
   }
 
   /**

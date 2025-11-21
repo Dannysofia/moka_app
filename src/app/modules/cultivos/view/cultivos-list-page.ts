@@ -34,6 +34,12 @@ export class CultivosListPage implements OnInit {
       const msg = p.get('msg');
       if (saved === '1' && msg) {
         this.alert(msg, 'success');
+        // Limpia los query params para evitar mostrar el toast en navegaciones posteriores
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { saved: null, msg: null },
+          replaceUrl: true,
+        });
       }
     });
     this.cargar();

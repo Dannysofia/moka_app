@@ -57,11 +57,6 @@ export class CultivoFormPage implements OnInit {
     this.loading = true;
     try {
       const payload = this.form.value as any;
-      // Validaciones adicionales
-      const hoy = new Date(); hoy.setHours(0,0,0,0);
-      const fecha = new Date(payload.fechaSiembra);
-      fecha.setHours(0,0,0,0);
-      if (fecha > hoy) throw new Error('La fecha de siembra no puede ser futura');
 
       if (this.id) {
         await this.srv.actualizarCultivo(this.id, payload);
