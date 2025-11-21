@@ -208,12 +208,14 @@ export class InicioPage implements OnInit {
 
   private toIndicadorVm(ind: Indicador): IndicadorVm {
     const meta = this.indicadorConfig[ind.tipo];
+    const numero = this.toNumber(ind.valor);
+
     if (!meta) {
       return {
         tipo: ind.tipo,
         label: 'Indicador',
         subtitle: '',
-        displayValue: this.formatNumber(ind.valor, 2),
+        displayValue: numero !== null ? this.formatNumber(numero, 2) : (ind.valor?.toString() || '—'),
         mediaClass: 'media-generico',
         icon: 'information-circle-outline',
       };
@@ -223,7 +225,7 @@ export class InicioPage implements OnInit {
       tipo: ind.tipo,
       label: meta.label,
       subtitle: meta.subtitle,
-      displayValue: meta.formatter(ind.valor),
+      displayValue: numero !== null ? meta.formatter(numero) : (ind.valor?.toString() || '—'),
       mediaClass: meta.mediaClass,
       icon: meta.icon,
     };
@@ -242,6 +244,17 @@ export class InicioPage implements OnInit {
       maximumFractionDigits,
       minimumFractionDigits: 0,
     }).format(value);
+  }
+
+  private toNumber(value: number | string | null | undefined): number | null {
+    if (value === null || value === undefined) return null;
+    if (typeof value === 'number') return isFinite(value) ? value : null;
+    const raw = value.toString().trim();
+    if (!raw) return null;
+    // Normaliza separadores: quita puntos de miles y usa coma como decimal
+    const normalized = raw.replace(/\./g, '').replace(',', '.');
+    const num = parseFloat(normalized);
+    return isNaN(num) ? null : num;
   }
 
   private parseDateValue(value: string) {

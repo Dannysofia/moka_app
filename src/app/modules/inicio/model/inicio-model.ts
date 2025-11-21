@@ -10,7 +10,7 @@ export type TipoIndicador = 'cafe_interno' | 'bolsa_ny' | 'tasa_cambio';
 export interface Indicador {
   id: string;
   tipo: TipoIndicador;
-  valor: number;                  // 2–4 decimales
+  valor: number | string;                  // 2–4 decimales
   fecha: string;                  // ISO date de actualización
 }
 
@@ -32,3 +32,4 @@ export interface InicioData {
   indicadores: Indicador[];
   cooperativas: Cooperativa[];
 }
+
