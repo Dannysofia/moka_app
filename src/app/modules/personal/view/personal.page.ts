@@ -33,6 +33,8 @@ export class PersonalPage implements OnInit {
   totalEmpleados: number = 0;
   empleadosActivos: number = 0;
   empleadosInactivos: number = 0;
+  empleadosVacaciones: number = 0;
+  empleadosSuspendidos: number = 0;
 
   formulario: FormularioEmpleado = {
     nombres: '',
@@ -42,7 +44,7 @@ export class PersonalPage implements OnInit {
     rol: '',
     fecha_ingreso: '',
     salario: '',
-    estado: 'activo',
+    estado: 'Activo',
     direccion: ''
   };
 
@@ -103,9 +105,10 @@ export class PersonalPage implements OnInit {
       this.totalEmpleados = stats.total;
       this.empleadosActivos = stats.activos;
       this.empleadosInactivos = stats.inactivos;
-      console.log(' Estadísticas:', stats);
+      this.empleadosVacaciones = stats.vacaciones;
+      this.empleadosSuspendidos = stats.suspendidos;
     } catch (err: any) {
-      console.error(' Error al cargar estadísticas:', err);
+      console.error(' Error al cargar estadisticas:', err);
     }
   }
 
@@ -144,7 +147,7 @@ export class PersonalPage implements OnInit {
       rol: '',
       fecha_ingreso: '',
       salario: '',
-      estado: 'activo',
+      estado: 'Activo',
       direccion: ''
     };
   }
@@ -165,17 +168,22 @@ export class PersonalPage implements OnInit {
     await loading.present();
 
     try {
+      const payload: FormularioEmpleado = {
+        ...this.formulario,
+        estado: this.normalizarEstadoTexto(this.formulario.estado)
+      };
+
       if (this.empleadoEditar) {
         // Editar empleado existente
         await this.personalService.actualizarEmpleado(
           this.empleadoEditar.id,
-          this.formulario
+          payload
         );
         await this.mostrarToast(' Empleado actualizado exitosamente', 'success');
       } else {
         // Agregar nuevo empleado - Generar nuevo UUID para cada empleado
         const nuevoUsuarioId = this.generarUUID();
-        await this.personalService.crearEmpleado(this.formulario);
+        await this.personalService.crearEmpleado(payload);
         await this.mostrarToast(' Empleado creado exitosamente', 'success');
       }
 
@@ -206,7 +214,7 @@ export class PersonalPage implements OnInit {
         ? empleado.fecha_ingreso.toISOString().split('T')[0] 
         : '',
       salario: empleado.salario ? empleado.salario.toString() : '',
-      estado: empleado.estado,
+      estado: this.normalizarEstadoTexto(empleado.estado),
       direccion: empleado.direccion || ''
     };
     this.mostrarModal = true;
@@ -266,6 +274,15 @@ export class PersonalPage implements OnInit {
     return nombre.substring(0, 2).toUpperCase();
   }
 
+  private normalizarEstadoTexto(valor: string | undefined | null): string {
+    const v = (valor || '').toLowerCase();
+    if (v === 'activo') return 'Activo';
+    if (v === 'inactivo') return 'Inactivo';
+    if (v === 'vacaciones') return 'Vacaciones';
+    if (v === 'suspendido') return 'Suspendido';
+    return 'Activo';
+  }
+
   /**
    * Mostrar alerta
    */
@@ -291,3 +308,4 @@ export class PersonalPage implements OnInit {
     await toast.present();
   }
 }
+

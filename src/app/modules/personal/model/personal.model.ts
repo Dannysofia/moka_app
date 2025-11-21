@@ -52,10 +52,10 @@ export enum RolEmpleado {
 }
 
 export enum EstadoEmpleado {
-  ACTIVO = 'activo',
-  INACTIVO = 'inactivo',
-  VACACIONES = 'vacaciones',
-  SUSPENDIDO = 'suspendido'
+  ACTIVO = 'Activo',
+  INACTIVO = 'Inactivo',
+  VACACIONES = 'Vacaciones',
+  SUSPENDIDO = 'Suspendido'
 }
 
 /**

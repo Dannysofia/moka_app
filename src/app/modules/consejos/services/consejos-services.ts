@@ -22,7 +22,7 @@ export class ConsejosService {
       const { data, error } = await this.supa.client
         .from('consejos')
         .select('id,titulo,contenido,categoria,fuente_url,fecha_publicacion,visibilidad,created_at,imagen_url')
-        .eq('visibilidad', 'activo')
+        .eq('visibilidad', 'Activo')
         .or(`fecha_publicacion.is.null,fecha_publicacion.lte.${todayStr}`)
         .order('created_at', { ascending: false })
         .limit(limit);

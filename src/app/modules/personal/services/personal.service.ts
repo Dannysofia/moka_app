@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../auth/services/auth-services';
-import { Empleado, EmpleadoDB, FormularioEmpleado, mapEmpleadoDBToApp } from '../model/personal.model';
+import { Empleado, EmpleadoDB, EstadoEmpleado, FormularioEmpleado, mapEmpleadoDBToApp } from '../model/personal.model';
 
 @Injectable({
   providedIn: 'root'
@@ -49,7 +49,7 @@ export class PersonalService {
       const { data, error } = await this.supabase
         .from('personal')
         .select('*')
-        .eq('estado', 'activo')
+        .eq('estado', EstadoEmpleado.ACTIVO)
         .order('nombres', { ascending: true });
 
       if (error) {
@@ -247,28 +247,37 @@ export class PersonalService {
     }
   }
 
-  async getEstadisticas(): Promise<{ total: number, activos: number, inactivos: number }> {
+    async getEstadisticas(): Promise<{ total: number, activos: number, inactivos: number, vacaciones: number, suspendidos: number }> {
     try {
-      const { count: total } = await this.supabase
+      const totalPromise = this.supabase
         .from('personal')
         .select('*', { count: 'exact', head: true });
 
-      const { count: activos } = await this.supabase
-        .from('personal')
-        .select('*', { count: 'exact', head: true })
-        .eq('estado', 'activo');
+      const activosPromise = this.contarPorEstado(EstadoEmpleado.ACTIVO);
+      const inactivosPromise = this.contarPorEstado(EstadoEmpleado.INACTIVO);
+      const vacacionesPromise = this.contarPorEstado(EstadoEmpleado.VACACIONES);
+      const suspendidosPromise = this.contarPorEstado(EstadoEmpleado.SUSPENDIDO);
+
+      const [{ count: total }, activos, inactivos, vacaciones, suspendidos] = await Promise.all([
+        totalPromise,
+        activosPromise,
+        inactivosPromise,
+        vacacionesPromise,
+        suspendidosPromise
+      ]);
 
       return {
         total: total || 0,
         activos: activos || 0,
-        inactivos: (total || 0) - (activos || 0)
+        inactivos: inactivos || 0,
+        vacaciones: vacaciones || 0,
+        suspendidos: suspendidos || 0
       };
     } catch (error: any) {
-      console.error('Error al obtener estadísticas:', error);
+      console.error('Error al obtener estadisticas:', error);
       throw error;
     }
   }
-
   validarEmail(email: string): boolean {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);

@@ -1,55 +1,98 @@
 :host { display: block; }
 
+.detail-toolbar {
+  --background: #f8fafc;
+  --color: #0f172a;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+
+  ion-title {
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .back-pill {
+    --background: rgba(22, 163, 74, 0.08);
+    --color: #16a34a;
+    border-radius: 12px;
+    padding: 4px;
+    margin-left: 4px;
+  }
+}
+
 .hero {
   width: 100%;
-  height: 180px; /* volver al alto original */
+  height: 200px;
   background-size: cover;
   background-position: center;
   background-color: #eef6f6;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 0 18px 18px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.08) 60%, rgba(0,0,0,0) 100%);
+  }
 }
 .hero.placeholder { background: linear-gradient(180deg, #f7fafb, #e8f0f0); }
 
 .article {
-  margin: -16px 0 0; /* ligera superposición visual */
-  background: #ffffff; /* mantener esquema original claro */
+  margin: -18px 12px 16px;
+  background: #ffffff;
   color: #111827;
-  padding: 16px;
-  border-radius: 16px 16px 0 0;
+  padding: 18px 16px;
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
 }
 
 .article h1 {
   font-size: 22px;
   line-height: 1.2;
-  margin: 6px 0 8px;
+  margin: 6px 0 10px;
   font-weight: 800;
-  color: #111827; /* título oscuro como antes */
+  color: #0f172a;
 }
 
 .meta {
-  color: #64748b; /* meta gris original */
+  color: #64748b;
   font-size: 12px;
   display: flex;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
 }
 .meta .dot { opacity: 0.8; }
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.meta ion-icon {
+  font-size: 14px;
+  color: #0f766e;
+}
 
 .chip {
   background: #e7f5f2;
   color: #0f766e;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 999px;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 12px;
 }
 
 .content {
-  margin-top: 12px;
-  color: #1f2937; /* texto base original */
+  margin-top: 8px;
+  color: #1f2937;
   font-size: 14px;
   line-height: 1.6;
 }
 .content p { margin: 0 0 12px; }
 .content h2 { font-size: 16px; font-weight: 800; margin: 16px 0 8px; color: #111827; }
 .content strong { color: #111827; }
+.content em { color: #0f766e; font-style: normal; }
 
 .empty { padding: 24px; text-align: center; color: #6b7280; }

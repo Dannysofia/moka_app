@@ -1,22 +1,36 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar class="detail-toolbar">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/consejos" text="Volver a Consejos" color="success"></ion-back-button>
+      <ion-back-button class="back-pill" defaultHref="/consejos" text="" color="success"></ion-back-button>
     </ion-buttons>
     <ion-title>Detalle del consejo</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content *ngIf="consejo as c">
-  <div class="hero" [class.placeholder]="!c.imagen_url" [style.backgroundImage]="c.imagen_url ? 'url(' + c.imagen_url + ')' : ''" role="img" [attr.aria-label]="c.titulo"></div>
+  <div
+    class="hero"
+    [class.placeholder]="!c.imagen_url"
+    [style.backgroundImage]="c.imagen_url ? 'url(' + c.imagen_url + ')' : ''"
+    role="img"
+    [attr.aria-label]="c.titulo">
+  </div>
 
   <div class="article">
     <h1>{{ c.titulo }}</h1>
     <div class="meta">
-      <span *ngIf="c.categoria" class="chip">{{ c.categoria }}</span>
-      <ng-container *ngIf="fechaPublicacion">Publicado el {{ fechaPublicacion }}</ng-container>
-      <span class="dot" *ngIf="fechaPublicacion && fuenteLabel">•</span>
-      <ng-container *ngIf="fuenteLabel">Fuente: {{ fuenteLabel }}</ng-container>
+      <span *ngIf="c.categoria" class="chip">
+        <ion-icon name="pricetag-outline"></ion-icon>
+        {{ c.categoria }}
+      </span>
+      <span class="meta-item" *ngIf="fechaPublicacion">
+        <ion-icon name="calendar-clear-outline"></ion-icon>
+        {{ fechaPublicacion }}
+      </span>
+      <span class="meta-item" *ngIf="fuenteLabel">
+        <ion-icon name="globe-outline"></ion-icon>
+        {{ fuenteLabel }}
+      </span>
     </div>
 
     <div class="content">
@@ -24,10 +38,22 @@
     </div>
   </div>
 
-  <ion-toast [isOpen]="showToast" [message]="toastMsg" [color]="toastColor" duration="2000" (didDismiss)="showToast = false"></ion-toast>
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMsg"
+    [color]="toastColor"
+    duration="2000"
+    (didDismiss)="showToast = false">
+  </ion-toast>
 </ion-content>
 
 <ion-content *ngIf="!consejo && !loading">
   <div class="empty">No fue posible cargar el consejo seleccionado</div>
-  <ion-toast [isOpen]="showToast" [message]="toastMsg" [color]="toastColor" duration="2000" (didDismiss)="showToast = false"></ion-toast>
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMsg"
+    [color]="toastColor"
+    duration="2000"
+    (didDismiss)="showToast = false">
+  </ion-toast>
 </ion-content>

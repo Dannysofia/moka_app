@@ -1,23 +1,17 @@
 <ion-header>
-  <ion-toolbar style="--background: #fafaf9;">
+  <ion-toolbar class="main-toolbar">
     <ion-title>Gestión de Personal</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="abrirModalRegistro()" color="success">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Crear Empleado
       </ion-button>
-      <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
+      <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu" color="success">
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
       </ion-menu-button>
     </ion-buttons>
   </ion-toolbar>
   
-  <ion-toolbar class="date-toolbar">
-    <div class="date-container">
-      <ion-icon name="people-outline"></ion-icon>
-      <span>{{ totalEmpleados }} Empleados Registrados</span>
-    </div>
-  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
@@ -41,40 +35,46 @@
 
     <div *ngIf="!cargando && !error">
       <!-- Tarjetas de resumen -->
-      <div class="summary-cards">
-        <ion-card class="summary-card">
+      <div class="summary-header-chip">
+        <div class="chip-icon">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div class="chip-text">
+          <div class="chip-number">{{ totalEmpleados }}</div>
+          <div class="chip-label">Empleados Registrados</div>
+        </div>
+      </div>
+
+      <div class="summary-cards compact">
+        <ion-card class="summary-card pill active">
           <ion-card-content>
-            <div class="summary-icon">
-              <ion-icon name="people"></ion-icon>
-            </div>
-            <div class="summary-info">
-              <div class="summary-number">{{ totalEmpleados }}</div>
-              <div class="summary-label">Total</div>
-            </div>
+            <div class="tile-icon"><ion-icon name="checkmark-circle-outline"></ion-icon></div>
+            <div class="summary-number">{{ empleadosActivos }}</div>
+            <div class="summary-label">Activos</div>
           </ion-card-content>
         </ion-card>
 
-        <ion-card class="summary-card active">
+        <ion-card class="summary-card pill inactive">
           <ion-card-content>
-            <div class="summary-icon active">
-              <ion-icon name="checkmark-circle"></ion-icon>
-            </div>
-            <div class="summary-info">
-              <div class="summary-number">{{ empleadosActivos }}</div>
-              <div class="summary-label">Activos</div>
-            </div>
+            <div class="tile-icon"><ion-icon name="close-circle-outline"></ion-icon></div>
+            <div class="summary-number">{{ empleadosInactivos }}</div>
+            <div class="summary-label">Inactivos</div>
           </ion-card-content>
         </ion-card>
 
-        <ion-card class="summary-card inactive">
+        <ion-card class="summary-card pill warning">
           <ion-card-content>
-            <div class="summary-icon inactive">
-              <ion-icon name="close-circle"></ion-icon>
-            </div>
-            <div class="summary-info">
-              <div class="summary-number">{{ empleadosInactivos }}</div>
-              <div class="summary-label">Inactivos</div>
-            </div>
+            <div class="tile-icon"><ion-icon name="airplane-outline"></ion-icon></div>
+            <div class="summary-number">{{ empleadosVacaciones }}</div>
+            <div class="summary-label">Vacaciones</div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="summary-card pill danger">
+          <ion-card-content>
+            <div class="tile-icon"><ion-icon name="alert-circle-outline"></ion-icon></div>
+            <div class="summary-number">{{ empleadosSuspendidos }}</div>
+            <div class="summary-label">Suspendidos</div>
           </ion-card-content>
         </ion-card>
       </div>
@@ -99,8 +99,8 @@
                 <h3>{{ empleado.nombreCompleto }}</h3>
                 <p class="cargo">{{ empleado.rol || 'Sin rol asignado' }}</p>
               </div>
-              <ion-badge [color]="empleado.estado === 'activo' ? 'success' : 'medium'">
-                {{ empleado.estado }}
+              <ion-badge [color]="empleado.estado && empleado.estado.toLowerCase() === 'activo' ? 'success' : 'medium'">
+                {{ empleado.estado || 'Sin estado' }}
               </ion-badge>
             </div>
 
@@ -253,10 +253,10 @@
           <ion-label position="stacked">Estado *</ion-label>
           <ion-select [(ngModel)]="formulario.estado" name="estado" placeholder="Seleccionar estado"
           required>
-            <ion-select-option value="activo">Activo</ion-select-option>
-            <ion-select-option value="inactivo">Inactivo</ion-select-option>
-            <ion-select-option value="vacaciones">Vacaciones</ion-select-option>
-            <ion-select-option value="suspendido">Suspendido</ion-select-option>
+            <ion-select-option value="Activo">Activo</ion-select-option>
+            <ion-select-option value="Inactivo">Inactivo</ion-select-option>
+            <ion-select-option value="Vacaciones">Vacaciones</ion-select-option>
+            <ion-select-option value="Suspendido">Suspendido</ion-select-option>
           </ion-select>
         </ion-item>
 
@@ -265,7 +265,6 @@
         </div>
 
         <ion-button expand="block" color="success" (click)="guardarEmpleado()" class="ion-margin-top">
-          <ion-icon slot="start" name="save-outline"></ion-icon>
           {{ empleadoEditar ? 'Actualizar' : 'Guardar' }} Empleado
         </ion-button>
       </form>
