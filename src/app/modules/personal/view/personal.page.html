@@ -1,10 +1,10 @@
 <ion-header>
   <ion-toolbar class="main-toolbar">
-    <ion-title>Gestión de Personal</ion-title>
+    <ion-title>Personal</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="abrirModalRegistro()" color="success">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-        CREAR EMPLEADO
+        Crear empleado
       </ion-button>
       <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu" color="success">
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
@@ -153,7 +153,7 @@
   <ng-template>
     <ion-header>
       <ion-toolbar style="--background: #fafaf9; --color: #000000;">
-        <ion-title>{{ empleadoEditar ? 'Editar' : 'Registrar' }} Empleado</ion-title>
+        <ion-title>{{ empleadoEditar ? 'Editar' : 'Crear' }} Empleado</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="cerrarModal()">
             <ion-icon name="close"></ion-icon>
@@ -199,7 +199,7 @@
 
         <ion-item>
           <ion-label position="stacked">Rol</ion-label>
-          <ion-select [(ngModel)]="formulario.rol" name="rol" placeholder="Seleccionar rol">
+          <ion-select [(ngModel)]="formulario.rol" name="rol" placeholder="Seleccionar rol" okText="Aceptar" cancelText="Cancelar">
             <ion-select-option value="Jornalero">Jornalero</ion-select-option>
             <ion-select-option value="Capataz">Capataz</ion-select-option>
             <ion-select-option value="Administrador">Administrador</ion-select-option>
@@ -251,7 +251,7 @@
 
         <ion-item>
           <ion-label position="stacked">Estado *</ion-label>
-          <ion-select [(ngModel)]="formulario.estado" name="estado" placeholder="Seleccionar estado"
+          <ion-select [(ngModel)]="formulario.estado" name="estado" placeholder="Seleccionar estado" okText="Aceptar" cancelText="Cancelar"
           required>
             <ion-select-option value="Activo">Activo</ion-select-option>
             <ion-select-option value="Inactivo">Inactivo</ion-select-option>
