@@ -3,7 +3,8 @@ ion-content.register-content {
 }
 ion-header {
   --background: #fff;
-  box-shadow: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #e5e7eb;
 }
 ion-menu-button {
   --color: var(--ion-menu-button);

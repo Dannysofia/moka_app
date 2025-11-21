@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import {
   Categoria,
   CrearProductoDto,
@@ -40,7 +40,8 @@ export class InventarioPage implements OnInit {
 
   constructor(
     private readonly inv: InventarioServices,
-    private readonly toast: ToastController
+    private readonly toast: ToastController,
+    private readonly alertCtrl: AlertController
   ) {}
 
   ngOnInit(): void {
@@ -175,18 +176,29 @@ export class InventarioPage implements OnInit {
   }
 
   async eliminar(p: Producto) {
-    const ok = confirm('¿Desea eliminar este producto?');
-    if (!ok) return;
-    const res = await this.inv.eliminar(p.id);
-    if (!res.ok) {
-      await this.presentarToast(res.error || 'No se pudo eliminar el producto, inténtelo nuevamente', 'danger');
-      return;
-    }
-    await this.presentarToast('Producto eliminado con éxito', 'success');
-    // Si borramos el último de la página y no hay más, retrocedemos de página
-    if (this.productos.length === 1 && this.page > 1) {
-      this.page -= 1;
-    }
-    this.cargarProductos();
+    const alert = await this.alertCtrl.create({
+      header: 'Confirmacion',
+      message: 'Desea eliminar este producto?',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async () => {
+            const res = await this.inv.eliminar(p.id);
+            if (!res.ok) {
+              await this.presentarToast(res.error || 'No se pudo eliminar el producto, intentelo nuevamente', 'danger');
+              return;
+            }
+            await this.presentarToast('Producto eliminado con exito', 'success');
+            if (this.productos.length === 1 && this.page > 1) {
+              this.page -= 1;
+            }
+            this.cargarProductos();
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 }

@@ -53,3 +53,12 @@ ion-menu ion-content {
 .app-shell {
   height: 100%;
 }
+
+/* global.scss */
+:root {
+  --ion-font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+}
+
+html, body, ion-app, ion-content {
+  font-family: var(--ion-font-family);
+}

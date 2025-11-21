@@ -64,10 +64,11 @@ export class TareaFormPage implements OnInit {
     this.loading = true;
     try {
       const payload = this.form.value as any;
-      // fecha >= hoy
-      const hoy = new Date(); hoy.setHours(0,0,0,0);
-      const fecha = new Date(payload.fechaProgramada); fecha.setHours(0,0,0,0);
-      if (fecha < hoy) throw new Error('La fecha no es válida, seleccione una más reciente');
+      // fecha >= hoy usando UTC para evitar desfases de zona horaria
+      const hoy = new Date();
+      const hoyUtc = new Date(Date.UTC(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()));
+      const fecha = new Date(`${payload.fechaProgramada}T00:00:00Z`);
+      if (fecha < hoyUtc) throw new Error('La fecha no es valida, seleccione una mas reciente');
 
       if (this.tareaId) {
         await this.srv.actualizarTarea(this.cultivoId, this.tareaId, payload);

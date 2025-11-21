@@ -61,9 +61,6 @@ export class CultivosService {
     if (/duplicate key value/i.test(msg) || /unique constraint/i.test(msg)) {
       return 'Ya existe un cultivo con ese nombre, intente con otro';
     }
-    if (/fecha_siembra/i.test(msg) && /check constraint/i.test(msg)) {
-      return 'La fecha de siembra no puede ser futura';
-    }
     if (/area/i.test(msg) && /check constraint/i.test(msg)) {
       return 'El área debe ser mayor a 0';
     }

@@ -1,14 +1,14 @@
 <ion-header>
-  <ion-toolbar style="--background: #fafaf9;">
+  <ion-toolbar style="--background: #ffffff;">
     <ion-title>Gestión Financiera</ion-title>
     <ion-buttons slot="end">
       <!-- Botón de agregar en el toolbar -->
       <ion-button (click)="abrirFormularioGasto()" color="success">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-        Crear registro
+        Agregar
       </ion-button>
       
-      <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
+      <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu" color="success">
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
       </ion-menu-button>
     </ion-buttons>
@@ -167,7 +167,7 @@
 <ion-modal [isOpen]="mostrarModal" (didDismiss)="cerrarModal()">
   <ng-template>
     <ion-header>
-      <ion-toolbar style="--background: #fafaf9;">
+      <ion-toolbar style="--background: #ffffff;">
         <ion-title>{{ modoEdicion ? 'Editar Transacción' : 'Agregar Transacción' }}</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="cerrarModal()">
@@ -182,7 +182,14 @@
         
         <ion-item>
           <ion-label position="stacked">Tipo *</ion-label>
-          <ion-select [(ngModel)]="nuevaTransaccion.tipo" name="tipo" placeholder="Selecciona" (ionChange)="onTipoChange()" required>
+          <ion-select
+            [(ngModel)]="nuevaTransaccion.tipo"
+            name="tipo"
+            placeholder="Selecciona"
+            (ionChange)="onTipoChange()"
+            okText="Aceptar"
+            cancelText="Cancelar"
+            required>
             <ion-select-option value="gasto">Gasto</ion-select-option>
             <ion-select-option value="ingreso">Ingreso</ion-select-option>
           </ion-select>
@@ -190,7 +197,13 @@
 
         <ion-item>
           <ion-label position="stacked">Categoría *</ion-label>
-          <ion-select [(ngModel)]="nuevaTransaccion.categoria" name="categoria" placeholder="Selecciona" required>
+          <ion-select
+            [(ngModel)]="nuevaTransaccion.categoria"
+            name="categoria"
+            placeholder="Selecciona"
+            okText="Aceptar"
+            cancelText="Cancelar"
+            required>
             <!-- Categorías para Gastos -->
             <ion-select-option *ngIf="nuevaTransaccion.tipo === 'gasto'" value="Alimentación">Alimentación</ion-select-option>
             <ion-select-option *ngIf="nuevaTransaccion.tipo === 'gasto'" value="Transporte">Transporte</ion-select-option>
@@ -206,12 +219,12 @@
             <ion-select-option *ngIf="nuevaTransaccion.tipo === 'ingreso'" value="Otros Ingresos">Otros Ingresos</ion-select-option>
             
             <!-- Categoría común -->
-            <ion-select-option value="Otros">Otros</ion-select-option>
+            <!--<ion-select-option value="Otros">Otros</ion-select-option>-->
           </ion-select>
         </ion-item>
 
         <ion-item>
-          <ion-label position="stacked">Descripción/Notas *</ion-label>
+          <ion-label position="stacked">Descripción *</ion-label>
           <ion-input 
             [(ngModel)]="nuevaTransaccion.notas" 
             name="notas" 
@@ -254,7 +267,7 @@
           color="success" 
           class="ion-margin-top"
           [disabled]="!nuevaTransaccion.categoria || !nuevaTransaccion.notas || !nuevaTransaccion.monto">
-          <ion-icon [name]="modoEdicion ? 'checkmark-done' : 'checkmark'" slot="start"></ion-icon>
+          <!--<ion-icon [name]="modoEdicion ? 'checkmark-done' : 'checkmark'" slot="start"></ion-icon>-->
           {{ modoEdicion ? 'Actualizar Transacción' : 'Guardar Transacción' }}
         </ion-button>
 

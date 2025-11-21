@@ -22,7 +22,7 @@
   <ion-searchbar
     placeholder="Buscar productos"
     [(ngModel)]="terminoBusqueda"
-    (ionChange)="buscar()"
+    (ionInput)="buscar()"
     showClearButton="focus"
     debounce="200">
   </ion-searchbar>
