@@ -36,12 +36,6 @@
       <p>Por ahora no hay cooperativas cargadas</p>
     </div>
 
-    <!-- Barra de conteo -->
-    <div class="count-bar" *ngIf="!cargando && !error">
-      <ion-icon name="people-circle-outline"></ion-icon>
-      <span>{{ cooperativas.length }} Cooperativas Disponibles</span>
-    </div>
-
     <!-- Lista de cooperativas -->
     <div class="cooperativas-list" *ngIf="!cargando && !error && cooperativas.length > 0">
       
