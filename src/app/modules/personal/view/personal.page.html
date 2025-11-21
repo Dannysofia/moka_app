@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="#fafaf9">
+  <ion-toolbar style="--background: #fafaf9;">
     <ion-title>Gestión de Personal</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="abrirModalRegistro()" color="success">
@@ -152,7 +152,7 @@
 <ion-modal [isOpen]="mostrarModal" (didDismiss)="cerrarModal()">
   <ng-template>
     <ion-header>
-      <ion-toolbar color="success">
+      <ion-toolbar style="--background: #fafaf9; --color: #000000;">
         <ion-title>{{ empleadoEditar ? 'Editar' : 'Registrar' }} Empleado</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="cerrarModal()">
@@ -170,8 +170,9 @@
             [(ngModel)]="formulario.nombres" 
             name="nombres" 
             placeholder="Nombres del empleado"
-            maxlength="80"
-            counter="true">
+            maxlength="20"
+            counter="true"
+            required>
           </ion-input>
         </ion-item>
 
@@ -181,8 +182,9 @@
             [(ngModel)]="formulario.apellidos" 
             name="apellidos" 
             placeholder="Apellidos del empleado"
-            maxlength="80"
-            counter="true">
+            maxlength="20"
+            counter="true"
+            required>
           </ion-input>
         </ion-item>
 
@@ -221,7 +223,10 @@
           <ion-input 
             [(ngModel)]="formulario.direccion" 
             name="direccion" 
-            placeholder="Dirección del empleado">
+            placeholder="Dirección del empleado"
+            maxlength="20"
+            >
+            
           </ion-input>
         </ion-item>
 
@@ -246,7 +251,8 @@
 
         <ion-item>
           <ion-label position="stacked">Estado *</ion-label>
-          <ion-select [(ngModel)]="formulario.estado" name="estado" placeholder="Seleccionar estado">
+          <ion-select [(ngModel)]="formulario.estado" name="estado" placeholder="Seleccionar estado"
+          required>
             <ion-select-option value="activo">Activo</ion-select-option>
             <ion-select-option value="inactivo">Inactivo</ion-select-option>
             <ion-select-option value="vacaciones">Vacaciones</ion-select-option>

@@ -1,11 +1,11 @@
 <ion-header>
-  <ion-toolbar color="#fafaf9">
+  <ion-toolbar style="--background: #fafaf9;">
     <ion-title>Gestión Financiera</ion-title>
     <ion-buttons slot="end">
       <!-- Botón de agregar en el toolbar -->
       <ion-button (click)="abrirFormularioGasto()" color="success">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-        Crear Producto
+        Crear registro
       </ion-button>
       
       <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
@@ -57,15 +57,7 @@
               <span class="summary-value negative">{{ gastos | currency:'USD':'symbol':'1.2-2' }}</span>
             </div>
 
-            <div class="summary-item">
-              <span class="summary-label">Ahorro Acumulado</span>
-              <span class="summary-value neutral">{{ ahorro | currency:'USD':'symbol':'1.2-2' }}</span>
-            </div>
-
-            <div class="summary-item">
-              <span class="summary-label">Inversiones</span>
-              <span class="summary-value neutral">{{ inversiones | currency:'USD':'symbol':'1.2-2' }}</span>
-            </div>
+            
 
             <div class="total-section">
               <div class="total-label">Balance Total</div>
@@ -175,7 +167,7 @@
 <ion-modal [isOpen]="mostrarModal" (didDismiss)="cerrarModal()">
   <ng-template>
     <ion-header>
-      <ion-toolbar color="success">
+      <ion-toolbar style="--background: #fafaf9;">
         <ion-title>{{ modoEdicion ? 'Editar Transacción' : 'Agregar Transacción' }}</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="cerrarModal()">
