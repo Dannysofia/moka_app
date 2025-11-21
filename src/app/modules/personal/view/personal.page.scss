@@ -40,12 +40,23 @@ ion-content {
 ion-header {
   .main-toolbar {
     --background: #ffffff;
-    --color: #000000;
+    --color: #2d2d2d;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --padding-top: 6px;
+    --padding-bottom: 6px;
 
     ion-title {
-      text-align: center;
+      text-align: left;
       width: 100%;
-      font-weight: 600;
+      font-weight: 400;
+      font-size: 20px;
+      padding-left: 4px;
+    }
+
+    ion-buttons[slot="end"] {
+      gap: 0;
+      margin-right: 4px;
     }
   }
 
