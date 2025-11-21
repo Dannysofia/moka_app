@@ -61,17 +61,25 @@
       </div>
       <ng-container *ngIf="!loading.cooperativas; else skCoops">
         <div *ngIf="cooperativas.length; else noCoops" class="cooperativas-list">
-          <ion-card *ngFor="let c of cooperativas" class="coop-card">
-            <div class="coop-image" *ngIf="c.logo_url; else placeholder" [style.backgroundImage]="'url(' + c.logo_url + ')'" role="img" [attr.aria-label]="c.nombre"></div>
-            <ng-template #placeholder>
-              <div class="coop-image placeholder"></div>
-            </ng-template>
-            <ion-card-header>
+          <ion-card *ngFor="let c of cooperativas" class="coop-card" (click)="verMasCooperativas()" button="true">
+            <div class="coop-image">
+              <img [src]="c.logo_url || 'assets/cafetal.jpg'" [alt]="c.nombre" />
+            </div>
+            <ion-card-header class="coop-title">
               <ion-card-title>{{ c.nombre }}</ion-card-title>
+              <ion-card-subtitle *ngIf="c.ubicacion">
+                <ion-icon name="location-outline"></ion-icon>
+                {{ c.ubicacion }}
+              </ion-card-subtitle>
             </ion-card-header>
             <ion-card-content>
-              <p class="coop-summary">{{ c.resumen }}</p>
-              <ion-note *ngIf="c.ubicacion">{{ c.ubicacion }}</ion-note>
+              <div class="info-section" *ngIf="c.resumen">
+                <h4 class="section-title">
+                  <ion-icon name="document-text-outline"></ion-icon>
+                  Descripcion
+                </h4>
+                <div class="info-text">{{ c.resumen }}</div>
+              </div>
             </ion-card-content>
           </ion-card>
         </div>

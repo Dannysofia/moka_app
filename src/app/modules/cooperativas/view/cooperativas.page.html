@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>Cooperativas</ion-title>
     <ion-buttons slot="end">
-      <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
+      <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu" color="success">
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
       </ion-menu-button>
     </ion-buttons>
@@ -113,7 +113,7 @@
         <ion-icon name="location-outline" slot="start"></ion-icon>
         <ion-label>
           <h3>Ubicación</h3>
-          <p>{{ cooperativaSeleccionada.ubicacion }}</p>
+          <p>{{ cooperativaSeleccionada.ubicacion  }}</p>
         </ion-label>
       </ion-item>
 
@@ -170,3 +170,4 @@
     </ion-content>
   </ng-template>
 </ion-modal>
+
