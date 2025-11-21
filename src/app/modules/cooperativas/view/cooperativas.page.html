@@ -1,18 +1,11 @@
 <ion-header>
-  <ion-toolbar color="#fafaf9">
+  <ion-toolbar>
     <ion-title>Cooperativas</ion-title>
     <ion-buttons slot="end">
       <ion-menu-button autoHide="false" menu="main-menu" aria-label="Abrir menu">
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
       </ion-menu-button>
     </ion-buttons>
-  </ion-toolbar>
-  
-  <ion-toolbar class="date-toolbar">
-    <div class="date-container">
-      <ion-icon name="people-circle-outline"></ion-icon>
-      <span>{{ cooperativas.length }} Cooperativas Disponibles</span>
-    </div>
   </ion-toolbar>
 </ion-header>
 
@@ -56,19 +49,16 @@
 
       <!-- Tarjetas de cooperativas -->
       <ion-card class="cooperativa-card" *ngFor="let cooperativa of cooperativasFiltradas">
-        <ion-card-header>
-          <div class="card-header-content">
-            <div class="cooperativa-icon">
-              <ion-icon name="business"></ion-icon>
-            </div>
-            <div class="cooperativa-title">
-              <ion-card-title>{{ cooperativa.nombre }}</ion-card-title>
-              <ion-card-subtitle>
-                <ion-icon name="location-outline"></ion-icon>
-                {{ cooperativa.ubicacion }}
-              </ion-card-subtitle>
-            </div>
-          </div>
+        <div class="cooperativa-image">
+          <img [src]="cooperativa.logo_url || 'assets/cafetal.jpg'" [alt]="cooperativa.nombre" />
+        </div>
+
+        <ion-card-header class="cooperativa-title">
+          <ion-card-title>{{ cooperativa.nombre }}</ion-card-title>
+          <ion-card-subtitle>
+            <ion-icon name="location-outline"></ion-icon>
+            {{ cooperativa.ubicacion | lowercase }}
+          </ion-card-subtitle>
         </ion-card-header>
 
         <ion-card-content>
@@ -78,50 +68,21 @@
               <ion-icon name="call-outline"></ion-icon>
               Contacto
             </h4>
-            <div class="info-grid">
-              <div class="info-item" *ngIf="cooperativa.telefono">
-                <ion-icon name="call"></ion-icon>
-                <span>{{ cooperativa.telefono }}</span>
-              </div>
-              <div class="info-item" *ngIf="cooperativa.email">
-                <ion-icon name="mail"></ion-icon>
-                <span>{{ cooperativa.email }}</span>
-              </div>
-              <div class="info-item" *ngIf="cooperativa.sitioWeb">
-                <ion-icon name="globe"></ion-icon>
-                <a [href]="cooperativa.sitioWeb" target="_blank">Visitar sitio</a>
-              </div>
-            </div>
+            <div class="info-text">{{ cooperativa.contacto || 'Sin contacto disponible' }}</div>
           </div>
 
-          <!-- Servicios principales -->
-          <div class="info-section">
+          <!-- Descripcion -->
+          <div class="info-section" *ngIf="cooperativa.resumen">
             <h4 class="section-title">
-              <ion-icon name="briefcase-outline"></ion-icon>
-              Servicios Principales
+              <ion-icon name="document-text-outline"></ion-icon>
+              Descripción
             </h4>
-            <div class="servicios-tags">
-              <ion-chip 
-                *ngFor="let servicio of cooperativa.servicios" 
-                color="success" 
-                outline="true">
-                <ion-icon name="checkmark-circle"></ion-icon>
-                <ion-label>{{ servicio }}</ion-label>
-              </ion-chip>
-            </div>
-          </div>
-
-          <!-- Botón de acción -->
-          <div class="card-actions">
-            <ion-button expand="block" fill="outline" color="success" (click)="verDetalles(cooperativa)">
-              <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-              Ver más información
-            </ion-button>
+            <div class="info-text">{{ cooperativa.resumen }}</div>
           </div>
         </ion-card-content>
       </ion-card>
 
-      <!-- Mensaje si no hay resultados de búsqueda -->
+      <!-- Mensaje si no hay resultados de busqueda -->
       <div class="empty-state" *ngIf="cooperativasFiltradas.length === 0 && terminoBusqueda">
         <ion-icon name="search-outline"></ion-icon>
         <h3>Sin resultados</h3>
